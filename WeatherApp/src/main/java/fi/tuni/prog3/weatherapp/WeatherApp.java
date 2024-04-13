@@ -18,6 +18,7 @@ import javafx.stage.Stage;
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
+    private final iAPI weatherAPI = new WeatherData(); 
 
     @Override
     public void start(Stage stage) {
@@ -39,11 +40,25 @@ public class WeatherApp extends Application {
         stage.setScene(scene);
         stage.setTitle("WeatherApp");
         stage.show();
+        
+        displayWeatherForTampere();
     }
 
     public static void main(String[] args) {
         launch();
     }
+    
+    private void displayWeatherForTampere() {
+        // Get weather data for Tampere
+        String weatherData = weatherAPI.getCurrentWeather(21.0278, 105.8342); // Tampere coordinates
+
+        // Update label in the top panel with weather data
+        Label topLabel = (Label) ((HBox) ((VBox) ((BorderPane) ((Scene) Stage
+                .getWindows().stream().findFirst().orElse(null).getScene()).getRoot())
+                .getCenter()).getChildren().get(0)).getChildren().get(0);
+
+        topLabel.setText(weatherData);
+    }    
 
     private VBox getCenterVBox() {
         //Creating an HBox.
