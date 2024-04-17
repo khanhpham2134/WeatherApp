@@ -18,7 +18,7 @@ import javafx.stage.Stage;
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
-    private final iAPI weatherAPI = new WeatherData(); 
+    private final iMyAPI weatherAPI = new WeatherData("metric"); 
 
     @Override
     public void start(Stage stage) {
@@ -41,24 +41,66 @@ public class WeatherApp extends Application {
         stage.setTitle("WeatherApp");
         stage.show();
         
-        displayWeatherForTampere();
+        display_current_Weather(); // Testing the extracted data from OpenWeather
+        display_forecast(); // Testing the extracted data from OpenWeather
     }
 
     public static void main(String[] args) {
         launch();
     }
     
-    private void displayWeatherForTampere() {
-        // Get weather data for Tampere
-        String weatherData = weatherAPI.getCurrentWeather(21.0278, 105.8342); // Tampere coordinates
+    /**
+     * This function displays the current weather data in London, Canada just to 
+     * demonstrate that the weather data has been successfully extracted from OpenWeather.
+     * The weather data is displayed in the top panel
+     */
+    private void display_current_Weather() {
+        // Main thing is to ask user to specify the location
+        Object weather_location_object = weatherAPI.lookUpLocation("London","","CA"); 
+        double[] weather_location = (double[]) weather_location_object;
+    
+        // If the returned map has more than 1 element, must specify the exact wanted location.
+        // Otherwise, just extract latitude and longitude
+        double latitude = weather_location[0];
+        double longitude = weather_location[1];
+        
+        String weatherData = weatherAPI.getCurrentWeather(latitude,longitude );
+        String display = "Weather in London" + ":\n" + weatherData;
 
         // Update label in the top panel with weather data
         Label topLabel = (Label) ((HBox) ((VBox) ((BorderPane) ((Scene) Stage
                 .getWindows().stream().findFirst().orElse(null).getScene()).getRoot())
                 .getCenter()).getChildren().get(0)).getChildren().get(0);
 
-        topLabel.setText(weatherData);
-    }    
+        topLabel.setText(display);
+    } 
+    
+     /**
+     * This function displays the next 2 days weather forecast data in London, Canada 
+     * just to demonstrate that the weather data has been successfully extracted 
+     * from OpenWeather.
+     * The weather data is displayed in the below panel
+     */
+    private void display_forecast(){
+        // Main thing is to ask user to specify the location
+        Object weather_location_object = weatherAPI.lookUpLocation("London","","CA"); 
+        double[] weather_location = (double[]) weather_location_object;
+    
+        // If the returned map has more than 1 element, must specify the exact wanted location.
+        // Otherwise, just extract latitude and longitude
+        double latitude = weather_location[0];
+        double longitude = weather_location[1];
+        
+        String forecast_data = weatherAPI.getForecast(latitude,longitude );
+        
+
+        // Update label in the bottom panel with forecast data
+        Label bottom_label = (Label) ((HBox) ((VBox) ((BorderPane) ((Scene) Stage
+                .getWindows().stream().findFirst().orElse(null).getScene()).getRoot())
+                .getCenter()).getChildren().get(1)).getChildren().get(0);
+
+        bottom_label.setText(forecast_data);
+    }
 
     private VBox getCenterVBox() {
         //Creating an HBox.

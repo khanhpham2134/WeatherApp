@@ -13,7 +13,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>19</version>
+            <version>19</version>  
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -36,6 +36,10 @@
                 <version>3.8.0</version>
                 <configuration>
                     <release>11</release>
+            <compilerArgs>
+            <arg>--add-modules</arg>
+            <arg>java.logging</arg>
+             </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
