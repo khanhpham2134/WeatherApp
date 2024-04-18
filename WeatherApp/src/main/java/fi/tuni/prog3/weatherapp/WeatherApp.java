@@ -114,6 +114,14 @@ public class WeatherApp extends Application {
         return pane;
     }
 
+    /**
+     * The function `fewDaysForecast` creates a VBox layout displaying a forecast for the next few days
+     * with date, temperature, and a placeholder logo for each day.
+     * 
+     * @return A VBox containing the layout for a few days forecast is being returned. The VBox
+     * includes HBox containers for each day (day1, day2, day3, day4, day5) with Text elements for
+     * date, temperature, and logo. The VBox has a specific size, padding, and background color set.
+     */
     private VBox fewDaysForecast() {
         VBox box = new VBox(15);
         box.setPrefSize(290, 275);
@@ -174,6 +182,13 @@ public class WeatherApp extends Application {
         return box;
     }
 
+    /**
+     * The function `hourlyForecast` creates a ScrollPane containing a GridPane with 24 columns.
+     * 
+     * @return The method `hourlyForecast()` is returning a `ScrollPane` object that contains a
+     * `GridPane` with 24 columns representing hourly forecast data. The `ScrollPane` has a preferred
+     * size of 650x200 and displays the `GridPane` content within it.
+     */
     private ScrollPane hourlyForecast() {
         GridPane grid = new GridPane();
         for (int i = 0; i < 24; i++) {
@@ -187,6 +202,17 @@ public class WeatherApp extends Application {
         return scroll;
     }
 
+    /**
+     * The addColumn function adds Text elements representing hour, temperature, and logo to a GridPane
+     * at a specified column.
+     * 
+     * @param hour The `hour` parameter in the `addColumn` method represents the hour of the day for
+     * which you are adding a column in the `GridPane`. It is used to position the elements within the
+     * grid at the specified hour column.
+     * @param grid The `grid` parameter in the `addColumn` method is of type `GridPane`. It is used to
+     * add the `hourText`, `degree`, and `logo` Text nodes to the specified column (`hour`) within the
+     * GridPane layout.
+     */
     private void addColumn(int hour, GridPane grid) {
         Text hourText = new Text(Integer.toString(hour));
         hourText.setStyle("-fx-font: 20 arial;");
@@ -199,6 +225,13 @@ public class WeatherApp extends Application {
         grid.add(logo, hour, 2);
     }
 
+    /**
+     * The `searchBar` function creates a BorderPane layout with a search button on the left, a history
+     * button on the right, and a text field for searching in the center.
+     * 
+     * @return A BorderPane object with a search bar interface containing a search button on the left,
+     * a history button on the right, and a text field for input in the center.
+     */
     private BorderPane searchBar() {
         BorderPane pane = new BorderPane();
 
