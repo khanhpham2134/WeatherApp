@@ -126,9 +126,10 @@ public class WeatherApp extends Application {
         VBox box = new VBox(15);
         box.setPrefSize(290, 275);
         box.setPadding(new Insets(10, 10 , 10, 10));
-        box.setStyle("-fx-background-color: b8e2f2;");
+        box.setStyle("-fx-background-color: #b8e2f2;");
 
         HBox day1 = new HBox(15);
+        day1.setAlignment(Pos.CENTER);
         Text date1 = new Text("TODAY");
         date1.setStyle("-fx-font: 40 arial;");
         Text temp1 = new Text("0*C");
@@ -139,6 +140,7 @@ public class WeatherApp extends Application {
         day1.getChildren().addAll(date1, r, temp1, logo1);
 
         HBox day2 = new HBox(15);
+        day2.setAlignment(Pos.CENTER);
         Text date2 = new Text("TODAY");
         date2.setStyle("-fx-font: 40 arial;");
         Text temp2 = new Text("0*C");
@@ -149,6 +151,7 @@ public class WeatherApp extends Application {
         day2.getChildren().addAll(date2, r2, temp2, logo2);
 
         HBox day3 = new HBox(15);
+        day3.setAlignment(Pos.CENTER);
         Text date3 = new Text("TODAY");
         date3.setStyle("-fx-font: 40 arial;");
         Text temp3 = new Text("0*C");
@@ -159,6 +162,7 @@ public class WeatherApp extends Application {
         day3.getChildren().addAll(date3, r3, temp3, logo3);
 
         HBox day4 = new HBox(15);
+        day4.setAlignment(Pos.CENTER);
         Text date4 = new Text("TODAY");
         date4.setStyle("-fx-font: 40 arial;");
         Text temp4 = new Text("0*C");
@@ -169,6 +173,7 @@ public class WeatherApp extends Application {
         day4.getChildren().addAll(date4, r4, temp4, logo4);
 
         HBox day5 = new HBox(15);
+        day5.setAlignment(Pos.CENTER);
         Text date5 = new Text("TODAY");
         date5.setStyle("-fx-font: 40 arial;");
         Text temp5 = new Text("0*C");
