@@ -36,7 +36,7 @@ public class WeatherData implements iMyAPI {
      * @param unit 
      */
     public WeatherData(String unit){
-        API_KEY = "7e2aaa9d361a771034770163dde8b02c";  // replace this with your API key
+        API_KEY = "7e2aaa9d361a771034770163dde8b02c";  
         Unit = unit;
     }
     
@@ -79,7 +79,7 @@ public class WeatherData implements iMyAPI {
         final String Open_weather_geocoding = "http://api.openweathermap.org/geo/1.0/direct";
         
         // query
-        String query = "q=" + loc_name + "," + state_name + "," + country_code + "&limit=5" +"&appid=" + API_KEY;
+        String query = "q=" + loc_name + "," + state_name + "," + country_code +"&appid=" + API_KEY;
         // limit is not provided, by default only 1 location returned
     
         // URL
@@ -124,23 +124,38 @@ public class WeatherData implements iMyAPI {
         }
     }
 
+    // implement iAPI
+    @Override
+    public String lookUpLocation(String loc){
+        double[] coordinates = lookUpLocation(loc,"","");  // utilize the above defined method
+        if (coordinates != null){
+            return coordinates[0] + " " + coordinates[1]; // lat and long
+        }
+        else {
+        return null; 
+        }
+    }
     
     /**
      * Retrieves current weather information based on latitude and longitude coordinates.
      *
      * @param lat    The latitude coordinate of the location.
      * @param lon    The longitude coordinate of the location.
-     * @param units  The unit of measurement for temperature. Valid values are "metric" for Celsius or "imperial" for Fahrenheit.
-     * @return       A string containing the current weather information, including temperature, 
-     * humidity, and description, formatted based on the specified units.
-     *               Returns null if an error occurs during the retrieval process.
+
+     * @return       An array of string containing the current temperature, 
+     * feels like, min and max temperature (in metric, Celsius), humidity, description,
+     * sky, and wind speed (in metric, m/s) IN THIS ORDER.
+     * 
+     * Returns an array of string with all elements are "Error" if error occurs during 
+     * the retrieval process.
      */    
     @Override
-    public String getCurrentWeather(double lat, double lon, String units) {
+    public String[] getCurrentWeather(double lat, double lon) {
         final String Open_weather = "http://api.openweathermap.org/data/2.5/weather";
         
         // query 
-        String query = "lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY + "&units=" + units;
+        String query = "lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY + "&units=metric";
+        // By default return measurement in metric
         
         // url address
         String address = Open_weather + "?" + query;
@@ -171,50 +186,53 @@ public class WeatherData implements iMyAPI {
             JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
 
             // Extract relevant weather information
-            // String cityName = jsonResponse.get("name").getAsString();
             JsonObject main = jsonResponse.getAsJsonObject("main");
-            double temperature = main.get("temp").getAsDouble();
-            double humidity = main.get("humidity").getAsDouble();
+            String temperature = main.get("temp").getAsString();
+            String feels_like = main.get("feels_like").getAsString();
+            String min_temp = main.get("temp_min").getAsString();
+            String max_temp = main.get("temp_max").getAsString();         
+            String humidity = main.get("humidity").getAsString();
             JsonObject weather = jsonResponse.getAsJsonArray("weather").get(0).getAsJsonObject();
             String description = weather.get("description").getAsString();
+            String main_sky = weather.get("main").getAsString();
+            JsonObject wind = jsonResponse.getAsJsonObject("wind");
+            String wind_speed = wind.get("speed").getAsString();
 
-            // Construct readable weather information string
-            String weatherInfo =  "";//"Weather in " + cityName + ", " + "" +":\n";
-            
-            if("metric".equals(units)){  // assume that unit could only either be metric or imperial
-            weatherInfo += "Temperature: " + temperature + "°C\n";
-            } else if ("imperial".equals(units)){
-            weatherInfo += "Temperature: " + temperature + "°F\n";
-            }
-            
-            weatherInfo += "Humidity: " + humidity + "%\n";
-            weatherInfo += "Description: " + description;
+            // Construct array of weather info in string
+            String[] weatherInfo = {temperature, feels_like, min_temp, max_temp
+            ,humidity,description,main_sky,wind_speed}; 
+            // These are string, so if needed they must be converted to rounded 
+            // integer (except for wind speed can be double) to be displayed on GUI
 
             return weatherInfo;            
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            String [] error = {"ERROR","ERROR","ERROR","ERROR","ERROR","ERROR","ERROR"
+            ,"ERROR"};
+            return error;
         } 
     }
-
+    
     /**
-     * Retrieves a next 2 days weather forecast for the specified location coordinates.
+     * Retrieves today + next 3 days weather forecast for the same location coordinates
+     * with the getCurrentWeather function.
      *
      * @param lat The latitude of the location.
      * @param lon The longitude of the location.
-     * @param units The units to use for temperature measurement. Can be "metric" for Celsius or "imperial" for Fahrenheit.
-     * @return A String containing the weather forecast for the next two days, including temperature, humidity, and description.
-     *         Returns null if an error occurs during the retrieval process.
+     * 
+     * @return A String array of string arrays in which each child array represent 
+     * the weather of a day (starting from today). Each child String array contains the date,
+     * main temperature, min, max (in Celsius) and sky.
      * @throws IOException If an I/O exception occurs while connecting to the weather API.
      */    
     @Override
-    public String getForecast(double lat, double lon, String units) {
+    public String[][] getForecast(double lat, double lon) {
         // Build the URL for the API call
         String url_String = "http://api.openweathermap.org/data/2.5/forecast/daily"
                 + "?lat=" + lat
                 + "&lon=" + lon
-                + "&cnt=3" // 3 days including today
-                + "&appid=" + API_KEY + "&units=" + units;
+                + "&cnt=4" // 4 days including today
+                + "&appid=" + API_KEY + "&units=metric";
 
         try {
             // Create a URL object
@@ -243,66 +261,79 @@ public class WeatherData implements iMyAPI {
                 // Parse the JSON response
                 JsonObject jsonObject = new Gson().fromJson(response.toString(), JsonObject.class);
 
-                // Extract the forecast data for the next two days
+                // Extract the forecast data for the upcoming 4 days including today
                 JsonArray forecastList = jsonObject.getAsJsonArray("list");
-
+                
+                JsonObject day0 = forecastList.get(0).getAsJsonObject();
                 JsonObject day1 = forecastList.get(1).getAsJsonObject();
                 JsonObject day2 = forecastList.get(2).getAsJsonObject();
-
+                JsonObject day3 = forecastList.get(3).getAsJsonObject();
+                
                 // Extract relevant information
-                double day1Temp = day1.getAsJsonObject("temp").get("day").getAsDouble();
-                double day2Temp = day2.getAsJsonObject("temp").get("day").getAsDouble();
-                double day1Humidity = day1.get("humidity").getAsDouble();
-                double day2Humidity = day2.get("humidity").getAsDouble();
-                String day1Description = day1.getAsJsonArray("weather").get(0).getAsJsonObject().get("description").getAsString();
-                String day2Description = day2.getAsJsonArray("weather").get(0).getAsJsonObject().get("description").getAsString();
+                // date and time 
+                long  day0_date_time = day0.get("dt").getAsLong();
+                String day0Date = new java.text.SimpleDateFormat("dd/MM").format(new java.util.Date (day0_date_time * 1000));
+                long  day1_date_time = day1.get("dt").getAsLong();
+                String day1Date = new java.text.SimpleDateFormat("dd/MM").format(new java.util.Date (day1_date_time * 1000));
+                long  day2_date_time = day2.get("dt").getAsLong();
+                String day2Date = new java.text.SimpleDateFormat("dd/MM").format(new java.util.Date (day2_date_time * 1000));
+                long  day3_date_time = day3.get("dt").getAsLong();
+                String day3Date = new java.text.SimpleDateFormat("dd/MM").format(new java.util.Date (day3_date_time * 1000));
                 
-                String displayed_unit ="";
-                if("metric".equals(units)){  // assume that unit could only either be metric or imperial
-                displayed_unit =  "°C";
-                } else if ("imperial".equals(units)){
-                displayed_unit =  "°F";
-                }                 
+                // main temperature
+                String day0Temp = day0.getAsJsonObject("temp").get("day").getAsString();
+                String day1Temp = day1.getAsJsonObject("temp").get("day").getAsString();
+                String day2Temp = day2.getAsJsonObject("temp").get("day").getAsString();
+                String day3Temp = day3.getAsJsonObject("temp").get("day").getAsString();
                 
+                // min temperature
+                String day0min = day0.getAsJsonObject("temp").get("min").getAsString();
+                String day1min = day1.getAsJsonObject("temp").get("min").getAsString();
+                String day2min = day2.getAsJsonObject("temp").get("min").getAsString();
+                String day3min = day3.getAsJsonObject("temp").get("min").getAsString();                
+                
+                // max temperature
+                String day0max = day0.getAsJsonObject("temp").get("max").getAsString();
+                String day1max = day1.getAsJsonObject("temp").get("max").getAsString();
+                String day2max = day2.getAsJsonObject("temp").get("max").getAsString();
+                String day3max = day3.getAsJsonObject("temp").get("max").getAsString(); 
+                
+                // sky
+                String day0sky = day0.getAsJsonArray("weather").get(0).getAsJsonObject().get("main").getAsString();
+                String day1sky = day1.getAsJsonArray("weather").get(0).getAsJsonObject().get("main").getAsString();
+                String day2sky = day2.getAsJsonArray("weather").get(0).getAsJsonObject().get("main").getAsString();
+                String day3sky = day3.getAsJsonArray("weather").get(0).getAsJsonObject().get("main").getAsString();
+                                
                 // Display the forecast for the next two days
-                String weather_forecast = "One day after: " + ":\n"  
-                        + "Temperature: " + day1Temp + " " + displayed_unit + ", Humidity: " + day1Humidity + "%, Description: " + day1Description +"\n" 
-                        + "One day after: " + "\n"
-                        + "Temperature: " + day2Temp + " " + displayed_unit + ", Humidity: " + day2Humidity + "%, Description: " + day2Description ;             
-
+                String[][] weather_forecast = {
+                    {day0Date, day0Temp, day0min, day0max, day0sky}, // Today's data
+                    {day1Date, day1Temp, day1min, day1max, day1sky}, // One day after's data
+                    {day2Date, day2Temp, day2min, day2max, day2sky}, // Two days after's data
+                    {day3Date, day3Temp, day3min, day3max, day3sky} // Three days after's data
+                    // These are string, so the temperature value should be 
+                    // converted to rounded integers to be displayed on the GUI
+                };
                 return weather_forecast;
             } else {
                 System.out.println("Error: " + responseCode);
-                return null;
+                String [][] error_here = {
+                    {"ERROR", "ERROR", "ERROR", "ERROR"}, 
+                    {"ERROR", "ERROR", "ERROR", "ERROR"}, 
+                    {"ERROR", "ERROR", "ERROR", "ERROR"}, 
+                    {"ERROR", "ERROR", "ERROR", "ERROR"} 
+                };
+                return error_here;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+                String [][] error_here = {
+                    {"ERROR", "ERROR", "ERROR", "ERROR"}, 
+                    {"ERROR", "ERROR", "ERROR", "ERROR"}, 
+                    {"ERROR", "ERROR", "ERROR", "ERROR"}, 
+                    {"ERROR", "ERROR", "ERROR", "ERROR"} 
+                };
+                return error_here;
         }
-    }
-
-    // implement iAPI
-    @Override
-    public String lookUpLocation(String loc){
-        double[] coordinates = lookUpLocation(loc,"","");  // utilize the above defined method
-        if (coordinates != null){
-            return coordinates[0] + " " + coordinates[1]; // lat and long
-        }
-        else {
-        return null; 
-        }
-    }
-    
-    @Override
-    public String getCurrentWeather(double lat, double lon) { // utilize the above defined method
-    String weather_info = getCurrentWeather(lat,lon,Unit);
-    return weather_info;
-    }
-    
-    @Override
-    public String getForecast(double lat, double lon) {  // utilize the above defined method
-    String forecast = getForecast(lat,lon,Unit);
-    return forecast;    
     }
 }
 

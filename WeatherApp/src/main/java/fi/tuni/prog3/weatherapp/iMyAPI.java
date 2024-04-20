@@ -23,25 +23,6 @@ public interface iMyAPI extends iAPI {
      */
     public Object lookUpLocation(String loc_name, String state_name, String country_code);
     
-    /**
-     * Returns the current weather for the given coordinates.
-     * @param lat The latitude of the location.
-     * @param lon The longitude of the location.
-     * @param units unit of the temperature ("standard", "metric" or "imperial")
-     * standard (SI) = Kelvin, metric = Celsius, imperial = Fahrenheit
-     * @return Object current weather data. Null if data could not be read
-     */
-    public Object getCurrentWeather(double lat, double lon, String units);    
-    
-     /**
-     * Returns the next 2 days weather forecast for the given coordinates.
-     * @param lat The latitude of the location.
-     * @param lon The longitude of the location.
-     * @param units unit of the temperature ("standard", "metric" or "imperial")
-     * standard (SI) = Kelvin, metric = Celsius, imperial = Fahrenheit
-     * @return Object forecast weather data. Null if data could not be read
-     */
-    public Object getForecast(double lat, double lon, String units);
     
     
 }

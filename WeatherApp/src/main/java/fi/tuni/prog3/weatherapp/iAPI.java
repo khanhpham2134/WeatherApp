@@ -18,7 +18,7 @@ public interface iAPI {
      * @param lon The longitude of the location.
      * @return String.
      */
-    public String getCurrentWeather(double lat, double lon);
+    public String[] getCurrentWeather(double lat, double lon);
 
     /**
      * Returns a forecast for the given coordinates.
@@ -26,5 +26,5 @@ public interface iAPI {
      * @param lon The longitude of the location.
      * @return String.
      */
-    public String getForecast(double lat, double lon);
+    public String[][] getForecast(double lat, double lon);
 }
