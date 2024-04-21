@@ -24,20 +24,22 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
-
+import java.util.HashMap;
+import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 public class WeatherData implements iMyAPI {
 
     private final String API_KEY;
-    private String Unit; // temperature unit
+   
     
     /**
      * Constructor that initializes the API key and the unit for temperature
      * @param unit 
      */
-    public WeatherData(String unit){
+    public WeatherData(){
         API_KEY = "7e2aaa9d361a771034770163dde8b02c";  
-        Unit = unit;
     }
     
     /** Don't pay attention to this yet
@@ -124,6 +126,116 @@ public class WeatherData implements iMyAPI {
         }
     }
 
+    /**
+     * Retrieves hourly weather forecast data for the specified latitude and longitude coordinates.
+     *
+     * @param lat The latitude coordinate.
+     * @param lon The longitude coordinate.
+     * @return A map containing hourly weather forecast data for the next four days, with each day represented
+     *         by a key ("Day 0" for the first 24 hours, "Day 1" for the next 24 hours, and so on) mapping to a 2D array. Each row
+     *         in the array represents an hourly forecast with columns containing hour, temperature, minimum
+     *         temperature, maximum temperature, and weather condition.
+     */
+    @Override
+    public Map<String, String[][]> getHourlyForecast(double lat, double lon) {
+        Map<String, String[][]> hourlyForecast = new HashMap<>();
+        
+        try {
+            String urlString = "https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY+ "&units=metric";
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+            
+            JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
+            JsonArray hourlyData = jsonResponse.getAsJsonArray("list");
+            
+            hourlyForecast.put("Day 0", new String[24][5]);
+            for (int i = 0; i < 24; i++) { // iterate through the first 24 timestamps
+                JsonElement element = hourlyData.get(i);
+                JsonObject dataPoint = element.getAsJsonObject();
+                String timestamp = dataPoint.get("dt_txt").getAsString();
+                String temperature = dataPoint.getAsJsonObject("main").get("temp").getAsString();
+                String tempMin = dataPoint.getAsJsonObject("main").get("temp_min").getAsString();
+                String tempMax = dataPoint.getAsJsonObject("main").get("temp_max").getAsString();
+                String weatherMain = dataPoint.getAsJsonArray("weather").get(0).getAsJsonObject().get("main").getAsString();
+                int hour = Integer.parseInt(timestamp.split(" ")[1].split(":")[0]);
+                String Hour =  String.valueOf(hour);
+                // Extract day from timestamp
+                              
+                // Store data in array
+                
+                hourlyForecast.get("Day 0")[i] = new String[] {Hour, temperature, tempMin, tempMax, weatherMain};
+            }
+            
+            hourlyForecast.put("Day 1", new String[24][5]);
+            for (int i = 24; i < 48; i++) { // iterate through the next 24 timestamps
+                JsonElement element = hourlyData.get(i);
+                JsonObject dataPoint = element.getAsJsonObject();
+                String timestamp = dataPoint.get("dt_txt").getAsString();
+                String temperature = dataPoint.getAsJsonObject("main").get("temp").getAsString();
+                String tempMin = dataPoint.getAsJsonObject("main").get("temp_min").getAsString();
+                String tempMax = dataPoint.getAsJsonObject("main").get("temp_max").getAsString();
+                String weatherMain = dataPoint.getAsJsonArray("weather").get(0).getAsJsonObject().get("main").getAsString();
+                int hour = Integer.parseInt(timestamp.split(" ")[1].split(":")[0]);
+                String Hour =  String.valueOf(hour);
+                // Extract day from timestamp
+                              
+                // Store data in array               
+                hourlyForecast.get("Day 1")[i-24] = new String[] {Hour, temperature, tempMin, tempMax, weatherMain};
+            }
+
+            hourlyForecast.put("Day 2", new String[24][5]);
+            for (int i = 48; i < 72; i++) { // iterate through the next 24 timestamps
+                JsonElement element = hourlyData.get(i);
+                JsonObject dataPoint = element.getAsJsonObject();
+                String timestamp = dataPoint.get("dt_txt").getAsString();
+                String temperature = dataPoint.getAsJsonObject("main").get("temp").getAsString();
+                String tempMin = dataPoint.getAsJsonObject("main").get("temp_min").getAsString();
+                String tempMax = dataPoint.getAsJsonObject("main").get("temp_max").getAsString();
+                String weatherMain = dataPoint.getAsJsonArray("weather").get(0).getAsJsonObject().get("main").getAsString();
+                int hour = Integer.parseInt(timestamp.split(" ")[1].split(":")[0]);
+                String Hour =  String.valueOf(hour);
+                // Extract day from timestamp
+                              
+                // Store data in array
+                
+                hourlyForecast.get("Day 2")[i-48] = new String[] {Hour, temperature, tempMin, tempMax, weatherMain};
+            }
+
+            hourlyForecast.put("Day 3", new String[24][5]);
+            for (int i = 72; i < 96; i++) { // iterate through the last 24 timestamps
+                JsonElement element = hourlyData.get(i);
+                JsonObject dataPoint = element.getAsJsonObject();
+                String timestamp = dataPoint.get("dt_txt").getAsString();
+                String temperature = dataPoint.getAsJsonObject("main").get("temp").getAsString();
+                String tempMin = dataPoint.getAsJsonObject("main").get("temp_min").getAsString();
+                String tempMax = dataPoint.getAsJsonObject("main").get("temp_max").getAsString();
+                String weatherMain = dataPoint.getAsJsonArray("weather").get(0).getAsJsonObject().get("main").getAsString();
+                int hour = Integer.parseInt(timestamp.split(" ")[1].split(":")[0]);
+                String Hour =  String.valueOf(hour);
+                // Extract day from timestamp
+                              
+                // Store data in array
+                
+                hourlyForecast.get("Day 3")[i-72] = new String[] {Hour, temperature, tempMin, tempMax, weatherMain};
+            }            
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return hourlyForecast;
+    
+    }
+    
     // implement iAPI
     @Override
     public String lookUpLocation(String loc){

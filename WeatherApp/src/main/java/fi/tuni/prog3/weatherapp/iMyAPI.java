@@ -23,6 +23,12 @@ public interface iMyAPI extends iAPI {
      */
     public Object lookUpLocation(String loc_name, String state_name, String country_code);
     
-    
-    
+    /**
+     * Returns the hourly forecast for a location
+     * 
+     * @param lat: latitude of the location
+     * @param lon: longitude of the location
+     * @return Object hourly forecast data
+     */
+    public Object getHourlyForecast(double lat, double lon);
 }
