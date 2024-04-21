@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat;
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
-    private final iMyAPI weatherAPI = new WeatherData("metric"); 
+    private final iMyAPI weatherAPI = new WeatherData(); 
     // By default the unit of the program is metric
     private final DisplayHandler displayHandler = new DisplayHandler();
 
@@ -97,7 +97,7 @@ public class WeatherApp extends Application {
         currentWeather.setBottom(additionalDataBox);
 
         // Few Days Forecast
-        VBox fewDaysForecast = new VBox(15);
+        VBox fewDaysForecast = new VBox(25);
         fewDaysForecast.setPrefSize(290, 275);
         fewDaysForecast.setPadding(new Insets(10, 10 , 10, 10));
         fewDaysForecast.setStyle("-fx-background-color: #b8e2f2;");
@@ -146,18 +146,7 @@ public class WeatherApp extends Application {
         HBox.setHgrow(r4, Priority.ALWAYS);
         day4.getChildren().addAll(date4, r4, temp4, logo4);
     
-        HBox day5 = new HBox(15);
-        day5.setAlignment(Pos.CENTER);
-        Text date5 = new Text("TODAY");
-        date5.setStyle("-fx-font: 40 arial;");
-        Text temp5 = new Text("0*C");
-        temp5.setStyle("-fx-font: 28 arial;");
-        Text logo5 = new Text("logo");
-        Region r5 = new Region();
-        HBox.setHgrow(r5, Priority.ALWAYS);
-        day5.getChildren().addAll(date5, r5, temp5, logo5);
-    
-        fewDaysForecast.getChildren().addAll(day1, day2, day3, day4, day5);
+        fewDaysForecast.getChildren().addAll(day1, day2, day3, day4);
         
         // Hourly Forecast
         GridPane hourlyForecast = new GridPane();
@@ -177,13 +166,29 @@ public class WeatherApp extends Application {
     
         Button searchButton = new Button("Search");
         searchButton.setOnAction((ActionEvent event) -> {
-            String[] weatherData = displayHandler.getWeatherData(searchBar);
-            temp.setText(weatherData[0]);
-            feelsLike.setText("FEELS LIKE: " + weatherData[1]);
-            lowestTemp.setText("L: " + weatherData[2]);
-            highestTemp.setText("H: " + weatherData[3]);
-            humid.setText("HUMIDITY: " + weatherData[4]);
-            wind.setText("WIND SPEED: " + weatherData[7]);
+            // Change the city name
+            city.setText(searchBar.getText().split(",", 3)[0]);
+
+            // Change current weather section
+            String[] currentWeatherData = displayHandler.getCurrentWeatherData(searchBar);
+            temp.setText(currentWeatherData[0]);
+            feelsLike.setText("FEELS LIKE: " + currentWeatherData[1]);
+            lowestTemp.setText("L: " + currentWeatherData[2]);
+            highestTemp.setText("H: " + currentWeatherData[3]);
+            humid.setText("HUMIDITY: " + currentWeatherData[4]);
+            wind.setText("WIND SPEED: " + currentWeatherData[7]);
+
+            // Change daily forecast
+            String[][] dailyForecast = displayHandler.getDailyForecast(searchBar);
+            date1.setText(dailyForecast[0][0]);
+            temp1.setText(dailyForecast[0][1]);
+            date2.setText(dailyForecast[1][0]);
+            temp2.setText(dailyForecast[1][1]);
+            date3.setText(dailyForecast[2][0]);
+            temp3.setText(dailyForecast[2][1]);
+            date4.setText(dailyForecast[3][0]);
+            temp4.setText(dailyForecast[3][1]);
+
         });
         searchBarSection.setLeft(searchButton);
     
