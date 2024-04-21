@@ -239,16 +239,36 @@ public class WeatherApp extends Application {
      */
     private BorderPane searchBar() {
         BorderPane pane = new BorderPane();
+        
+        TextField searchBar = new TextField();
+        pane.setCenter(searchBar);
 
-        Button searchButton = new Button("Search");
+        Button searchButton = searchButton(searchBar);
         pane.setLeft(searchButton);
 
         Button historyButton = new Button("History");
         pane.setRight(historyButton);
 
-        TextField searchBar = new TextField();
-        pane.setCenter(searchBar);
-
         return pane;
     }
- } 
+
+    /**
+     * The function `searchButton` creates a search button that triggers a method to get the city name
+     * based on the text entered in a text field.
+     * 
+     * @param searchBar The `searchBar` parameter is a `TextField` object that represents the input
+     * field where the user can enter the search query.
+     * @return The method `searchButton` is returning a `Button` object that is created with the text
+     * "Search" and has an `ActionEvent` handler set to call `DisplayHandler.getCityName(searchBar)`
+     * when the button is clicked.
+     */
+    private Button searchButton(TextField searchBar) {
+        Button searchButton = new Button("Search");
+
+        searchButton.setOnAction((ActionEvent event) -> {
+            DisplayHandler.getCityName(searchBar);
+        });
+
+        return searchButton;
+    }
+} 
