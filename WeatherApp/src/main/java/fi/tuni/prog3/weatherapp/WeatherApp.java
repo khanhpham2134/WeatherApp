@@ -26,7 +26,7 @@ import javafx.stage.Stage;
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
-
+    
     @Override
     public void start(Stage stage) {        
         BorderPane root = new BorderPane();
@@ -270,6 +270,6 @@ public class WeatherApp extends Application {
         });
 
         return searchButton;
-        
+
     }
 } 
