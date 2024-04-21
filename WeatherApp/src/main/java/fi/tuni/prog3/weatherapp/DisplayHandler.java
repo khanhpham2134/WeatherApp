@@ -8,8 +8,20 @@ import javafx.scene.control.TextField;
  */
 public class DisplayHandler {
 
-    public static String[] getCityName(TextField textField) {
-        String[] cityData = textField.getText().split(",", 3);
-        return cityData;
+    private final iMyAPI weatherAPI = new WeatherData("metric");
+
+    public String[] getWeatherData(TextField textField) {
+        if (textField != null) {
+            String[] cityData = textField.getText().split(",", 3);
+    
+            Object cityLocationObject = weatherAPI.lookUpLocation(cityData[0], "", cityData[1]);
+            double[] cityLocation = (double[]) cityLocationObject;
+            String[] weatherData = weatherAPI.getCurrentWeather(cityLocation[0], cityLocation[1]);
+            
+            return weatherData;
+
+        }
+        return null;
     }
+
 }
