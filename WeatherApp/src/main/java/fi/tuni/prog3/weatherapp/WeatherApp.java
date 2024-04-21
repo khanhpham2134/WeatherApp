@@ -20,12 +20,15 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import java.text.SimpleDateFormat;
 
 
 /**
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
+    private final iMyAPI weatherAPI = new WeatherData("metric"); 
+    // By default the unit of the program is metric
 
     @Override
     public void start(Stage stage) {        
@@ -40,7 +43,7 @@ public class WeatherApp extends Application {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("WeatherApp");
-        stage.show();
+        stage.show(); 
     }
     
     public static void main(String[] args) {
