@@ -270,5 +270,6 @@ public class WeatherApp extends Application {
         });
 
         return searchButton;
+        
     }
 } 
