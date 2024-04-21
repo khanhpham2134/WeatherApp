@@ -13,13 +13,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 
 /**
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
-    private final iMyAPI weatherAPI = new WeatherData("metric"); 
+    private final iMyAPI weatherAPI = new WeatherData(); 
     // By default the unit of the program is metric
 
     @Override
@@ -100,6 +101,7 @@ public class WeatherApp extends Application {
         double longitude = weather_location[1];
         
         String forecast_data[][] = weatherAPI.getForecast(latitude,longitude );
+        Map<String, String[][]> hourlyForecast=(Map<String, String[][]>) weatherAPI.getHourlyForecast(latitude, longitude);
 
         for (String[] day : forecast_data) {
             for (String info : day) {
@@ -107,7 +109,8 @@ public class WeatherApp extends Application {
             }
             System.out.println();
         }
-    } 
+    }
+    
 
     private VBox getCenterVBox() {
         //Creating an HBox.
