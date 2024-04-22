@@ -9,7 +9,17 @@ import java.util.Map;
  */
 public class DisplayHandler {
 
-    private final iMyAPI weatherAPI = new WeatherData();
+    private final iMyAPI weatherAPI = new WeatherData("Metric");
+
+    public boolean ifInputValid(TextField textField) {
+        String[] cityData = textField.getText().split(",", 3);
+        if (cityData.length != 2) {
+            return true;
+        }
+        Object cityLocationObject = weatherAPI.lookUpLocation(cityData[0], "", cityData[1]);
+
+        return weatherAPI.get_error_flag();
+    }
 
     public String[] getCurrentWeatherData(TextField textField) {
         String[] cityData = textField.getText().split(",", 3);
@@ -29,13 +39,13 @@ public class DisplayHandler {
         return weatherData;
     }
     
-    public Map<String, String[][]> getHourlyForecast(TextField textField) {
+    public String[][] getHourlyForecast(TextField textField) {
         String[] cityData = textField.getText().split(",", 3);
         Object cityLocationObject = weatherAPI.lookUpLocation(cityData[0], "", cityData[1]);
         double[] cityLocation = (double[]) cityLocationObject;
         Object weatherDataObject = weatherAPI.getHourlyForecast(cityLocation[0], cityLocation[1]);
-        Map<String, String[][]> weatherData = (Map<String, String[][]>) weatherDataObject;
-        
+        String[][] weatherData = (String[][]) weatherDataObject;
+
         return weatherData;
     }
 

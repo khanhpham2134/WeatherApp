@@ -7,10 +7,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.BlurType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -35,7 +37,7 @@ import java.util.Map;
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
-    private final iMyAPI weatherAPI = new WeatherData(); 
+    private final iMyAPI weatherAPI = new WeatherData("metric"); 
     // By default the unit of the program is metric
     private final DisplayHandler displayHandler = new DisplayHandler();
 
@@ -161,13 +163,13 @@ public class WeatherApp extends Application {
         hourlyForecast.setHgap(10);
         hourlyForecast.setVgap(10);
         for (int hour = 0; hour < 24; hour++) {
-            Text hourText = new Text(Integer.toString(hour));
+            Text hourText = new Text();
             hourText.setStyle("-fx-font: 20 arial;");
             hourlyForecast.add(hourText, hour, 0);
-            Text degree = new Text("0*C");
+            Text degree = new Text();
             degree.setStyle("-fx-font: 20 arial;");
             hourlyForecast.add(degree, hour, 1);
-            Text logo = new Text("logo");
+            Text logo = new Text();
             logo.setStyle("-fx-font: 20 arial");
             hourlyForecast.add(logo, hour, 2);
         }
@@ -184,50 +186,66 @@ public class WeatherApp extends Application {
         
         Button searchButton = new Button("Search");
         searchButton.setOnAction((ActionEvent event) -> {
-            // Change the city name
-            String cityName = searchBar.getText().split(",", 3)[0];
-            city.setText(cityName.toUpperCase());
+            boolean inputIsInvalid = displayHandler.ifInputValid(searchBar);
+            if (inputIsInvalid) {
+                Alert a = new Alert(AlertType.ERROR);
+                a.setContentText("Invalid Input");
+                a.show();
+            } else {
+                // Change the city name
+                String cityName = searchBar.getText().split(",", 3)[0];
+                city.setText(cityName.toUpperCase());
+                
+                // Change current weather section
+                String[] currentWeatherData = displayHandler.getCurrentWeatherData(searchBar);
+                temp.setText(currentWeatherData[0]);
+                feelsLike.setText("FEELS LIKE: " + currentWeatherData[1]);
+                lowestTemp.setText("L: " + currentWeatherData[2]);
+                highestTemp.setText("H: " + currentWeatherData[3]);
+                humid.setText("HUMIDITY: " + currentWeatherData[4]);
+                wind.setText("WIND SPEED: " + currentWeatherData[7]);
+                
+                // Change daily forecast
+                String[][] dailyForecast = displayHandler.getDailyForecast(searchBar);
+                date1.setText(dailyForecast[0][0]);
+                temp1.setText(dailyForecast[0][1]);
+                date2.setText(dailyForecast[1][0]);
+                temp2.setText(dailyForecast[1][1]);
+                date3.setText(dailyForecast[2][0]);
+                temp3.setText(dailyForecast[2][1]);
+                date4.setText(dailyForecast[3][0]);
+                temp4.setText(dailyForecast[3][1]);
+                
+                // Change hourly forecast
+                root.setBottom(null);
+                String[][] hourlyForecastData = displayHandler.getHourlyForecast(searchBar);
+                for (int hour = 0; hour < 24; hour++) {
+                    Text hourText = new Text(hourlyForecastData[hour][0].substring(11, 16));
+                    hourText.setStyle("-fx-font: 20 arial;");
+                    hourlyForecast.add(hourText, hour, 0);
+                    Text degree = new Text(hourlyForecastData[hour][1]);
+                    degree.setStyle("-fx-font: 20 arial;");
+                    hourlyForecast.add(degree, hour, 1);
+                    Text logo = new Text("logo");
+                    logo.setStyle("-fx-font: 20 arial");
+                    hourlyForecast.add(logo, hour, 2);
+                    Text tempMin = new Text(hourlyForecastData[hour][2]);
+                    tempMin.setStyle("-fx-font: 20 arial;");
+                    hourlyForecast.add(tempMin, hour, 3);
+                    Text tempMax = new Text(hourlyForecastData[hour][3]);
+                    tempMax.setStyle("-fx-font: 20 arial;");
+                    hourlyForecast.add(tempMax, hour, 4);
+                    Text humidity = new Text(hourlyForecastData[hour][5]);
+                    humidity.setStyle("-fx-font: 20 arial;");
+                    hourlyForecast.add(humidity, hour, 5);
+                }
             
-            // Change current weather section
-            String[] currentWeatherData = displayHandler.getCurrentWeatherData(searchBar);
-            temp.setText(currentWeatherData[0]);
-            feelsLike.setText("FEELS LIKE: " + currentWeatherData[1]);
-            lowestTemp.setText("L: " + currentWeatherData[2]);
-            highestTemp.setText("H: " + currentWeatherData[3]);
-            humid.setText("HUMIDITY: " + currentWeatherData[4]);
-            wind.setText("WIND SPEED: " + currentWeatherData[7]);
-            
-            // Change daily forecast
-            String[][] dailyForecast = displayHandler.getDailyForecast(searchBar);
-            date1.setText(dailyForecast[0][0]);
-            temp1.setText(dailyForecast[0][1]);
-            date2.setText(dailyForecast[1][0]);
-            temp2.setText(dailyForecast[1][1]);
-            date3.setText(dailyForecast[2][0]);
-            temp3.setText(dailyForecast[2][1]);
-            date4.setText(dailyForecast[3][0]);
-            temp4.setText(dailyForecast[3][1]);
-            
-            // Change hourly forecast
-            Map<String, String[][]> hourlyForecastData = displayHandler.getHourlyForecast(searchBar);
-            for (int hour = 0; hour < 24; hour++) {
-                Text hourText = new Text(Integer.toString(hour));
-                hourText.setStyle("-fx-font: 20 arial;");
-                hourlyForecast.add(hourText, hour, 0);
-                Text degree = new Text("0*C");
-                degree.setStyle("-fx-font: 20 arial;");
-                hourlyForecast.add(degree, hour, 1);
-                Text logo = new Text("logo");
-                logo.setStyle("-fx-font: 20 arial");
-                hourlyForecast.add(logo, hour, 2);
-            }
-        
-            ScrollPane newScrollPane = new ScrollPane();
-            newScrollPane.setPrefSize(650, 200);
-            newScrollPane.setContent(hourlyForecast);
-
-            root.setBottom(newScrollPane);
-            
+                ScrollPane newScrollPane = new ScrollPane();
+                newScrollPane.setPrefSize(650, 200);
+                newScrollPane.setContent(hourlyForecast);
+    
+                root.setBottom(newScrollPane);
+            } 
         });
         searchBarSection.setLeft(searchButton);
         

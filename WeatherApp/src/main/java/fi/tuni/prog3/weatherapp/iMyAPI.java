@@ -20,4 +20,6 @@ public interface iMyAPI extends iAPI {
      * @return Object hourly forecast data
      */
     public Object getHourlyForecast(double lat, double lon);
+
+    public boolean get_error_flag();
 }

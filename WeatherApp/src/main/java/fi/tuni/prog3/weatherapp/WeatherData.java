@@ -190,6 +190,12 @@ public class WeatherData implements iMyAPI {
             ERROR_LOCATION = true;
             return null;
         }
+
+        catch(IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            ERROR_LOCATION = true;
+            return null;
+        }
         
         finally{ 
             if (scanner != null) {
