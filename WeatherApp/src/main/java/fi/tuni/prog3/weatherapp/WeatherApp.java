@@ -93,7 +93,7 @@ public class WeatherApp extends Application {
      */
     private void display_forecast(){
         // Main thing is to ask user to specify the location
-        Object weather_location_object = weatherAPI.lookUpLocation("Ha Noi","","VN"); 
+        Object weather_location_object = weatherAPI.lookUpLocation("Ottawa","","CA"); 
         double[] weather_location = (double[]) weather_location_object;
     
         // If the returned map has more than 1 element, must specify the exact wanted location.
@@ -102,12 +102,24 @@ public class WeatherApp extends Application {
         double longitude = weather_location[1];
         
         String forecast_data[][] = weatherAPI.getForecast(latitude,longitude );
-        
+        Object hourly_forecast_object = weatherAPI.getHourlyForecast(latitude, longitude);
+        String[][] hourly_forecast = (String [][]) hourly_forecast_object;
 
         for (String[] day : forecast_data) {
             for (String info : day) {
                 System.out.print(info + " ");
             }
+            System.out.println();
+        }
+        
+                // Loop through each row
+        for (int i = 0; i < hourly_forecast.length; i++) {
+            // Loop through each column in the current row
+            for (int j = 0; j < hourly_forecast[i].length; j++) {
+                // Print the current element
+                System.out.print(hourly_forecast[i][j] + " ");
+            }
+            // Move to the next line after printing all elements in the row
             System.out.println();
         }
     }

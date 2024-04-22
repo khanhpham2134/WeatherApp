@@ -7,10 +7,12 @@ public interface iAPI {
 
     /**
      * Returns coordinates for a location.
-     * @param loc Name of the location for which coordinates should be fetched.
-     * @return String.
+     * @param loc_name Name of the location for which coordinates should be fetched.
+     * @param state_name Name of the state only for US location
+     * @param country_code Country code to specify the location
+     * @return double array.
      */
-    public String lookUpLocation(String loc);
+    public double[] lookUpLocation(String loc_name, String state_name, String country_code);
 
     /**
      * Returns the current weather for the given coordinates.
