@@ -23,6 +23,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.Map;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -83,7 +85,7 @@ public class WeatherApp extends Application {
         VBox data = new VBox();
         Text feelsLike = new Text("FEELS LIKE: ");
         feelsLike.setStyle("-fx-font: 23 arial;");
-        Text humid = new Text("HUMIDITY: ");
+        Text humid = new Text("HUMIDITY: "); 
         humid.setStyle("-fx-font: 23 arial;");
         Text wind = new Text("WIND SPEED: ");
         wind.setStyle("-fx-font: 23 arial;");
@@ -91,7 +93,12 @@ public class WeatherApp extends Application {
         additionalDataBox.setLeft(data);
         VBox buttons = new VBox(15);
         Button setFav = new Button("Favorite");
-        Button changeUnit = new Button("Imperial");
+        setFav.setPrefWidth(100);
+        Button changeUnit = new Button("Change Unit");
+        changeUnit.setPrefWidth(100);
+        changeUnit.setOnAction((ActionEvent event) -> {
+
+        });
         buttons.getChildren().addAll(setFav, changeUnit);
         additionalDataBox.setRight(buttons);
         currentWeather.setBottom(additionalDataBox);
@@ -150,8 +157,18 @@ public class WeatherApp extends Application {
         
         // Hourly Forecast
         GridPane hourlyForecast = new GridPane();
-        for (int i = 0; i < 24; i++) {
-            addColumn(i, hourlyForecast);
+        hourlyForecast.setHgap(10);
+        hourlyForecast.setVgap(10);
+        for (int hour = 0; hour < 24; hour++) {
+            Text hourText = new Text(Integer.toString(hour));
+            hourText.setStyle("-fx-font: 20 arial;");
+            hourlyForecast.add(hourText, hour, 0);
+            Text degree = new Text("0*C");
+            degree.setStyle("-fx-font: 20 arial;");
+            hourlyForecast.add(degree, hour, 1);
+            Text logo = new Text("logo");
+            logo.setStyle("-fx-font: 20 arial");
+            hourlyForecast.add(logo, hour, 2);
         }
     
         ScrollPane scrollPane = new ScrollPane();
@@ -163,12 +180,13 @@ public class WeatherApp extends Application {
         
         TextField searchBar = new TextField();
         searchBarSection.setCenter(searchBar);
-    
+        
         Button searchButton = new Button("Search");
         searchButton.setOnAction((ActionEvent event) -> {
             // Change the city name
-            city.setText(searchBar.getText().split(",", 3)[0]);
-
+            String cityName = searchBar.getText().split(",", 3)[0];
+            city.setText(cityName.toUpperCase());
+            
             // Change current weather section
             String[] currentWeatherData = displayHandler.getCurrentWeatherData(searchBar);
             temp.setText(currentWeatherData[0]);
@@ -177,7 +195,7 @@ public class WeatherApp extends Application {
             highestTemp.setText("H: " + currentWeatherData[3]);
             humid.setText("HUMIDITY: " + currentWeatherData[4]);
             wind.setText("WIND SPEED: " + currentWeatherData[7]);
-
+            
             // Change daily forecast
             String[][] dailyForecast = displayHandler.getDailyForecast(searchBar);
             date1.setText(dailyForecast[0][0]);
@@ -188,13 +206,33 @@ public class WeatherApp extends Application {
             temp3.setText(dailyForecast[2][1]);
             date4.setText(dailyForecast[3][0]);
             temp4.setText(dailyForecast[3][1]);
+            
+            // Change hourly forecast
+            Map<String, String[][]> hourlyForecastData = displayHandler.getHourlyForecast(searchBar);
+            for (int hour = 0; hour < 24; hour++) {
+                Text hourText = new Text(Integer.toString(hour));
+                hourText.setStyle("-fx-font: 20 arial;");
+                hourlyForecast.add(hourText, hour, 0);
+                Text degree = new Text("0*C");
+                degree.setStyle("-fx-font: 20 arial;");
+                hourlyForecast.add(degree, hour, 1);
+                Text logo = new Text("logo");
+                logo.setStyle("-fx-font: 20 arial");
+                hourlyForecast.add(logo, hour, 2);
+            }
+        
+            ScrollPane newScrollPane = new ScrollPane();
+            newScrollPane.setPrefSize(650, 200);
+            newScrollPane.setContent(hourlyForecast);
 
+            root.setBottom(newScrollPane);
+            
         });
         searchBarSection.setLeft(searchButton);
-    
+        
         Button historyButton = new Button("History");
         searchBarSection.setRight(historyButton);
-
+        
         // Adding Sections
         root.setTop(searchBarSection);
         root.setLeft(currentWeather);
@@ -209,32 +247,5 @@ public class WeatherApp extends Application {
     
     public static void main(String[] args) {
         launch();
-    }
-
-    /**
-     * The addColumn function adds Text elements representing hour, temperature, and logo to a GridPane
-     * at a specified column.
-     * 
-     * @param hour The `hour` parameter in the `addColumn` method represents the hour of the day for
-     * which you are adding a column in the `GridPane`. It is used to position the elements within the
-     * grid at the specified hour column.
-     * @param grid The `grid` parameter in the `addColumn` method is of type `GridPane`. It is used to
-     * add the `hourText`, `degree`, and `logo` Text nodes to the specified column (`hour`) within the
-     * GridPane layout.
-     */
-    private void addColumn(int hour, GridPane grid) {
-        Text hourText = new Text(Integer.toString(hour));
-        hourText.setStyle("-fx-font: 20 arial;");
-        grid.add(hourText, hour, 0);
-        Text degree = new Text("0*C");
-        degree.setStyle("-fx-font: 20 arial;");
-        grid.add(degree, hour, 1);
-        Text logo = new Text("logo");
-        logo.setStyle("-fx-font: 20 arial");
-        grid.add(logo, hour, 2);
-    }
-
-    private void setCurrentWeatherDisplay(String[] weatherData) {
-
     }
 } 

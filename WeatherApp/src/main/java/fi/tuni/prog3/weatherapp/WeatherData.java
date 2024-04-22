@@ -33,7 +33,6 @@ public class WeatherData implements iMyAPI {
 
     private final String API_KEY;
    
-    
     /**
      * Constructor that initializes the API key and the unit for temperature
      * @param unit 
@@ -318,11 +317,14 @@ public class WeatherData implements iMyAPI {
 
             return weatherInfo;            
         } catch (IOException e) {
-            e.printStackTrace();
             String [] error = {"ERROR","ERROR","ERROR","ERROR","ERROR","ERROR","ERROR"
             ,"ERROR"};
             return error;
-        } 
+        } catch (IndexOutOfBoundsException e) {
+            String [] error = {"ERROR","ERROR","ERROR","ERROR","ERROR","ERROR","ERROR"
+            ,"ERROR"};
+            return error;
+        }
     }
     
     /**
