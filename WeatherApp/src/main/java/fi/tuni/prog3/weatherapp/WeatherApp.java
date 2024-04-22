@@ -14,6 +14,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.scene.control.ComboBox;
 
 
 /**
@@ -150,9 +154,139 @@ public class WeatherApp extends Application {
 
         //Adding an event to the button to terminate the application.
         button.setOnAction((ActionEvent event) -> {
+            writeToFile();
             Platform.exit();
         });
 
         return button;
     }
+    
+    // Save favourite locations
+    
+    private List<String> favourites = new ArrayList<String>();
+    private ComboBox<String> favouritesBox = favouritesDropBox();
+    
+    private void writeToFile() {
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("favourites.txt"))) {
+            for (String location : favourites) {
+                writer.write(location);
+                writer.newLine();
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        /* try (BufferedWriter writer = new BufferedWriter(new FileWriter("current_location.txt"))) {
+            writer.write(city);
+            writer.close();
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }*/
+    }
+    
+    private void readToFile() {
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("favourites.txt"))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                favourites.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        /*try (BufferedReader reader = new BufferedReader(new FileReader("last_location.txt"))) {
+            city = reader.readLine();
+            lookUpLocation(city, "", country);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+    }
+     
+    private ComboBox<String> favouritesDropBox() {
+        try {
+            // Initialize favouritesBox only if it's not already initialized
+            if (favouritesBox == null) {
+                favouritesBox = new ComboBox<>();
+            }
+    
+    
+            // Check if favourites is null or empty before setting items
+            if (favouritesBox.getItems().isEmpty() && favourites != null && !favourites.isEmpty()) {
+                favouritesBox.getItems().setAll(favourites);
+            }
+    
+            return favouritesBox;
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        return favouritesBox;
+    }
+      
+      // This method updates the items in the ComboBox
+    private void updateFavBox() {
+        favouritesDropBox().getItems().clear();
+        favouritesDropBox().getItems().setAll(favourites);
+    }
+
+    
 }
+
+/*
+        // Empty favourites-button
+        Button clearFavButton = new Button("Clear favourites");
+
+        clearFavs.setOnAction(event -> {
+            favourites.clear();
+            updateFavBox();
+        });
+
+
+        // Creating a button that will save/unsave favourite locations
+
+        root.getChildren().add(new Label("Favourites:")); 
+  
+        // Creating a ToggleGroup 
+        ToggleGroup group = new ToggleGroup(); 
+  
+        // Creating new Toggle buttons. 
+        ToggleButton saveFavButton = new ToggleButton("Save"); 
+        ToggleButton unsaveFavButton = new ToggleButton("Unsave"); 
+  
+        // Set toggle group 
+        // In a group, maximum only 
+        // one button is selected 
+        saveFavButton.setToggleGroup(group); 
+        unsaveFavButton.setToggleGroup(group); 
+  
+        unsaveFavButton.setOnAction(event -> {
+            if (favourites.contains(city)) {
+                favourites.remove(city);
+                updateFavBox();}
+        });
+
+        saveFavButton.setOnAction(event -> {
+            favourites.add(city);
+            updateFavBox();
+        });
+  
+        // unsave button is selected at first by default 
+        unsaveFavButton.setSelected(true); 
+  
+        root.getChildren().addAll(saveFavButton, unsaveFavButton); 
+
+        // Load previously saved favourites
+        readToFile();
+        updateFavBox();
+
+    
+
+
+*/
