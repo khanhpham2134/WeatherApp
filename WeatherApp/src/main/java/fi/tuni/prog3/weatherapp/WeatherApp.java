@@ -59,7 +59,7 @@ public class WeatherApp extends Application {
      */
     private void display_current_Weather() {
         // Main thing is to ask user to specify the location
-        Object weather_location_object = weatherAPI.lookUpLocation("Guatemala City","","GT"); // Wrong country code fail the program
+        Object weather_location_object = weatherAPI.lookUpLocation("London","",""); // Wrong country code fail the program
         double[] weather_location = (double[]) weather_location_object;
     
         // If the returned map has more than 1 element, must specify the exact wanted location.
@@ -70,6 +70,7 @@ public class WeatherApp extends Application {
         String[] weatherData = weatherAPI.getCurrentWeather(latitude,longitude );
         StringBuilder sb = new StringBuilder();
         for (String str : weatherData) {
+            str += " ";
             sb.append(str);
             System.out.println(str);         
         }
@@ -92,7 +93,7 @@ public class WeatherApp extends Application {
      */
     private void display_forecast(){
         // Main thing is to ask user to specify the location
-        Object weather_location_object = weatherAPI.lookUpLocation("Guatemala City","","GT"); 
+        Object weather_location_object = weatherAPI.lookUpLocation("Ha Noi","","VN"); 
         double[] weather_location = (double[]) weather_location_object;
     
         // If the returned map has more than 1 element, must specify the exact wanted location.
@@ -101,7 +102,7 @@ public class WeatherApp extends Application {
         double longitude = weather_location[1];
         
         String forecast_data[][] = weatherAPI.getForecast(latitude,longitude );
-        Map<String, String[][]> hourlyForecast=(Map<String, String[][]>) weatherAPI.getHourlyForecast(latitude, longitude);
+        
 
         for (String[] day : forecast_data) {
             for (String info : day) {
