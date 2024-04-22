@@ -12,12 +12,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.text.SimpleDateFormat;
+import java.util.Map;
 
 
 /**
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
+    private final iMyAPI weatherAPI = new WeatherData(); 
+    // By default the unit of the program is metric
 
     @Override
     public void start(Stage stage) {
@@ -39,11 +43,74 @@ public class WeatherApp extends Application {
         stage.setScene(scene);
         stage.setTitle("WeatherApp");
         stage.show();
+        
+        display_current_Weather(); // Testing the extracted data from OpenWeather
+        display_forecast(); // Testing the extracted data from OpenWeather
     }
 
     public static void main(String[] args) {
         launch();
     }
+    
+    /**
+     * This function displays the current weather data just to 
+     * demonstrate that the weather data has been successfully extracted from OpenWeather.
+     * The weather data is displayed in the top panel
+     */
+    private void display_current_Weather() {
+        // Main thing is to ask user to specify the location
+        Object weather_location_object = weatherAPI.lookUpLocation("Guatemala City","","GT"); // Wrong country code fail the program
+        double[] weather_location = (double[]) weather_location_object;
+    
+        // If the returned map has more than 1 element, must specify the exact wanted location.
+        // Otherwise, just extract latitude and longitude
+        double latitude = weather_location[0];
+        double longitude = weather_location[1];
+        
+        String[] weatherData = weatherAPI.getCurrentWeather(latitude,longitude );
+        StringBuilder sb = new StringBuilder();
+        for (String str : weatherData) {
+            sb.append(str);
+            System.out.println(str);         
+        }
+        String string_data = sb.toString();
+        String display = "Weather" + ": \n" + string_data;
+
+        // Update label in the top panel with weather data
+        Label topLabel = (Label) ((HBox) ((VBox) ((BorderPane) ((Scene) Stage
+                .getWindows().stream().findFirst().orElse(null).getScene()).getRoot())
+                .getCenter()).getChildren().get(0)).getChildren().get(0);
+
+        topLabel.setText(display);
+    } 
+    
+     /**
+     * This function displays today and the next 3 days weather forecast data 
+     * just to demonstrate that the weather data has been successfully extracted 
+     * from OpenWeather.
+     * The weather data is displayed in the below panel
+     */
+    private void display_forecast(){
+        // Main thing is to ask user to specify the location
+        Object weather_location_object = weatherAPI.lookUpLocation("Guatemala City","","GT"); 
+        double[] weather_location = (double[]) weather_location_object;
+    
+        // If the returned map has more than 1 element, must specify the exact wanted location.
+        // Otherwise, just extract latitude and longitude
+        double latitude = weather_location[0];
+        double longitude = weather_location[1];
+        
+        String forecast_data[][] = weatherAPI.getForecast(latitude,longitude );
+        Map<String, String[][]> hourlyForecast=(Map<String, String[][]>) weatherAPI.getHourlyForecast(latitude, longitude);
+
+        for (String[] day : forecast_data) {
+            for (String info : day) {
+                System.out.print(info + " ");
+            }
+            System.out.println();
+        }
+    }
+    
 
     private VBox getCenterVBox() {
         //Creating an HBox.
