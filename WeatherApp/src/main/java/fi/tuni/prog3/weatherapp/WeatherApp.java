@@ -20,7 +20,7 @@ import java.util.Map;
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
-    private final iMyAPI weatherAPI = new WeatherData(); 
+    private final iMyAPI weatherAPI = new WeatherData("imperial"); 
     // By default the unit of the program is metric
 
     @Override
@@ -59,14 +59,12 @@ public class WeatherApp extends Application {
      */
     private void display_current_Weather() {
         // Main thing is to ask user to specify the location
-        Object weather_location_object = weatherAPI.lookUpLocation("London","",""); // Wrong country code fail the program
+        Object weather_location_object = weatherAPI.lookUpLocation("Ha Noi","","VN"); // Wrong country code fail the program
         double[] weather_location = (double[]) weather_location_object;
-    
-        // If the returned map has more than 1 element, must specify the exact wanted location.
-        // Otherwise, just extract latitude and longitude
         double latitude = weather_location[0];
         double longitude = weather_location[1];
         
+        // Testing output of the function
         String[] weatherData = weatherAPI.getCurrentWeather(latitude,longitude );
         StringBuilder sb = new StringBuilder();
         for (String str : weatherData) {
@@ -93,14 +91,12 @@ public class WeatherApp extends Application {
      */
     private void display_forecast(){
         // Main thing is to ask user to specify the location
-        Object weather_location_object = weatherAPI.lookUpLocation("Ottawa","","CA"); 
+        Object weather_location_object = weatherAPI.lookUpLocation("Ha Noi","","VN"); 
         double[] weather_location = (double[]) weather_location_object;
-    
-        // If the returned map has more than 1 element, must specify the exact wanted location.
-        // Otherwise, just extract latitude and longitude
         double latitude = weather_location[0];
         double longitude = weather_location[1];
         
+        // Testing output of the two functions
         String forecast_data[][] = weatherAPI.getForecast(latitude,longitude );
         Object hourly_forecast_object = weatherAPI.getHourlyForecast(latitude, longitude);
         String[][] hourly_forecast = (String [][]) hourly_forecast_object;

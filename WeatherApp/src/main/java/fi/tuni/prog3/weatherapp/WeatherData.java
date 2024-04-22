@@ -84,7 +84,7 @@ public class WeatherData implements iMyAPI {
         // 6 is for time, temp, min, max, sky, humidity 
         
         try {
-            String urlString = "https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY+"&cnt=24"+ "&units=metric";
+            String urlString = "https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY+"&cnt=24"+ "&units=" + UNIT;
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -216,7 +216,7 @@ public class WeatherData implements iMyAPI {
         final String Open_weather = "http://api.openweathermap.org/data/2.5/weather";
         
         // query 
-        String query = "lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY + "&units=metric";
+        String query = "lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY + "&units=" + UNIT;
         // By default return measurement in metric
         
         // url address
@@ -294,7 +294,7 @@ public class WeatherData implements iMyAPI {
                 + "?lat=" + lat
                 + "&lon=" + lon
                 + "&cnt=4" // 4 days including today
-                + "&appid=" + API_KEY + "&units=metric";
+                + "&appid=" + API_KEY + "&units=" + UNIT;
 
         try {
             // Create a URL object
