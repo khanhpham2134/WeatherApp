@@ -79,8 +79,8 @@ public class WeatherApp extends Application {
         currentWeatherDataBox.setAlignment(Pos.CENTER);
         Text temp = new Text("12*c");
         temp.setStyle("-fx-font: 45 arial;");
-        //Image description = new Image("/icons/day-clear.png");
-        //ImageView descriptionView = new ImageView(description);
+        // Image description = new Image("/resources/icons/day-clear.png");
+        // ImageView descriptionView = new ImageView(description);
         currentWeatherDataBox.getChildren().addAll(temp);
         currentWeather.setCenter(currentWeatherDataBox);
     
