@@ -25,21 +25,18 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.Map;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
-import java.util.Map;
 
 
 /**
  * JavaFX Weather Application.
  */
-public class WeatherApp extends Application {
-    private final iMyAPI weatherAPI = new WeatherData("metric"); 
+public class WeatherApp extends Application { 
     // By default the unit of the program is metric
     private final DisplayHandler displayHandler = new DisplayHandler();
+    private final ImageHandler imageHandler = new ImageHandler();
 
     @Override
     public void start(Stage stage) {        
@@ -78,12 +75,13 @@ public class WeatherApp extends Application {
         VBox currentWeatherDataBox = new VBox();
         currentWeatherDataBox.setAlignment(Pos.CENTER);
         Text temp = new Text("12*c");
-        temp.setStyle("-fx-font: 45 arial;");
-        // Image description = new Image("/resources/icons/day-clear.png");
-        // ImageView descriptionView = new ImageView(description);
-        currentWeatherDataBox.getChildren().addAll(temp);
+        temp.setStyle("-fx-font: 45 arial;");       
+        Image description = new Image(getClass().getResourceAsStream("/icons/day-clear.png"));
+        ImageView descriptionView = new ImageView(description);
+        descriptionView.setFitHeight(90);
+        descriptionView.setFitWidth(90);
+        currentWeatherDataBox.getChildren().addAll(temp, descriptionView);
         currentWeather.setCenter(currentWeatherDataBox);
-    
         BorderPane additionalDataBox = new BorderPane();
         VBox data = new VBox();
         Text feelsLike = new Text("FEELS LIKE: ");
@@ -162,16 +160,32 @@ public class WeatherApp extends Application {
         GridPane hourlyForecast = new GridPane();
         hourlyForecast.setHgap(10);
         hourlyForecast.setVgap(10);
-        for (int hour = 0; hour < 24; hour++) {
+        Text[][] textList = new Text[24][6];
+        for (int hour = 0; hour < 24; hour++) {  
             Text hourText = new Text();
-            hourText.setStyle("-fx-font: 20 arial;");
+            hourText.setStyle("-fx-font: 20 arial; -fx-font-weight: bold;");
             hourlyForecast.add(hourText, hour, 0);
             Text degree = new Text();
             degree.setStyle("-fx-font: 20 arial;");
             hourlyForecast.add(degree, hour, 1);
             Text logo = new Text();
-            logo.setStyle("-fx-font: 20 arial");
+            logo.setStyle("-fx-font: 20 arial;");
             hourlyForecast.add(logo, hour, 2);
+            Text lowestTempHourly = new Text();
+            lowestTempHourly.setStyle("-fx-font: 20 arial;");
+            hourlyForecast.add(lowestTempHourly, hour, 3);
+            Text highestTempHourly = new Text();
+            highestTempHourly.setStyle("-fx-font: 20 arial;");
+            hourlyForecast.add(highestTempHourly, hour, 4);
+            Text humidity = new Text();
+            humidity.setStyle("-fx-font: 20 arial;");
+            hourlyForecast.add(humidity, hour, 5); 
+            textList[hour][0] = hourText;
+            textList[hour][1] = degree;
+            textList[hour][2] = logo;
+            textList[hour][3] = lowestTempHourly;
+            textList[hour][4] = highestTempHourly;
+            textList[hour][5] = humidity;
         }
     
         ScrollPane scrollPane = new ScrollPane();
@@ -179,10 +193,9 @@ public class WeatherApp extends Application {
         scrollPane.setContent(hourlyForecast);
         
         // Search Bar
-        BorderPane searchBarSection = new BorderPane();
+        HBox searchBarSection = new HBox();
         
         TextField searchBar = new TextField();
-        searchBarSection.setCenter(searchBar);
         
         Button searchButton = new Button("Search");
         searchButton.setOnAction((ActionEvent event) -> {
@@ -203,6 +216,7 @@ public class WeatherApp extends Application {
                 lowestTemp.setText("L: " + currentWeatherData[2]);
                 highestTemp.setText("H: " + currentWeatherData[3]);
                 humid.setText("HUMIDITY: " + currentWeatherData[4]);
+                
                 wind.setText("WIND SPEED: " + currentWeatherData[7]);
                 
                 // Change daily forecast
@@ -217,41 +231,24 @@ public class WeatherApp extends Application {
                 temp4.setText(dailyForecast[3][1]);
                 
                 // Change hourly forecast
-                root.setBottom(null);
                 String[][] hourlyForecastData = displayHandler.getHourlyForecast(searchBar);
                 for (int hour = 0; hour < 24; hour++) {
-                    Text hourText = new Text(hourlyForecastData[hour][0].substring(11, 16));
-                    hourText.setStyle("-fx-font: 20 arial;");
-                    hourlyForecast.add(hourText, hour, 0);
-                    Text degree = new Text(hourlyForecastData[hour][1]);
-                    degree.setStyle("-fx-font: 20 arial;");
-                    hourlyForecast.add(degree, hour, 1);
-                    Text logo = new Text("logo");
-                    logo.setStyle("-fx-font: 20 arial");
-                    hourlyForecast.add(logo, hour, 2);
-                    Text tempMin = new Text(hourlyForecastData[hour][2]);
-                    tempMin.setStyle("-fx-font: 20 arial;");
-                    hourlyForecast.add(tempMin, hour, 3);
-                    Text tempMax = new Text(hourlyForecastData[hour][3]);
-                    tempMax.setStyle("-fx-font: 20 arial;");
-                    hourlyForecast.add(tempMax, hour, 4);
-                    Text humidity = new Text(hourlyForecastData[hour][5]);
-                    humidity.setStyle("-fx-font: 20 arial;");
-                    hourlyForecast.add(humidity, hour, 5);
+                    textList[hour][0].setText(hourlyForecastData[hour][0].substring(11, 16));
+                    textList[hour][1].setText(hourlyForecastData[hour][1]);
+                    textList[hour][2].setText(hourlyForecastData[hour][2]);
+                    textList[hour][3].setText(hourlyForecastData[hour][3]);
+                    textList[hour][4].setText(hourlyForecastData[hour][4]);
+                    textList[hour][5].setText(hourlyForecastData[hour][5]);
                 }
-            
-                ScrollPane newScrollPane = new ScrollPane();
-                newScrollPane.setPrefSize(650, 200);
-                newScrollPane.setContent(hourlyForecast);
-    
-                root.setBottom(newScrollPane);
             } 
         });
-        searchBarSection.setLeft(searchButton);
         
+        Button favButton = new Button("Favorite");
+        Button quitButton = new Button("Quit");
         Button historyButton = new Button("History");
-        searchBarSection.setRight(historyButton);
-        
+        searchBarSection.getChildren().addAll(searchBar, searchButton, historyButton, favButton, quitButton);
+
+
         // Adding Sections
         root.setTop(searchBarSection);
         root.setLeft(currentWeather);
