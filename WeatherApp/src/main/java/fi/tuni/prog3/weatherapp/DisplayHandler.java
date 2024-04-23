@@ -9,56 +9,80 @@ import java.util.Map;
  */
 public class DisplayHandler {
 
-    private final iMyAPI weatherAPI = new WeatherData("Metric");
+    private final iMyAPI weatherAPIMetric = new WeatherData("metric");
+    private final iMyAPI weatherAPIImperial = new WeatherData("imperial");
 
     public boolean ifInputValid(TextField textField) {
-        String[] cityData = textField.getText().split(",", 3);
-        if (cityData.length != 2) {
+        String[] cityData = textField.getText().split(",", 10);
+        if (cityData.length == 1) {
+            String[] cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], "", "");
+            
+        } else if (cityData.length == 2) {
+            String[] cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], "", cityData[1]);
+            
+        } else if (cityData.length == 3) {
+            String[] cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], cityData[1], cityData[2]);            
+        } else { // invalid amount of parameters
             return true;
         }
-        Object cityLocationObject = weatherAPI.lookUpLocation(cityData[0], "", cityData[1]);
-
-        return weatherAPI.get_error_flag();
+        return weatherAPIMetric.get_error_flag();
+    }
+    
+    public String[] getCityInformation(TextField textField) {
+        String[] cityData = textField.getText().split(",", 10);
+        String[] cityLocation = {};
+        if (cityData.length == 1) {
+            cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], "", "");
+        } else if (cityData.length == 2) {
+            cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], "", cityData[1]);
+        } else {
+            cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], cityData[1], cityData[2]);
+        }
+        
+        return cityLocation;
     }
 
-    public String[] getCurrentWeatherData(TextField textField) {
-        String[] cityData = textField.getText().split(",", 3);
-        Object cityLocationObject = weatherAPI.lookUpLocation(cityData[0], "", cityData[1]);
-        double[] cityLocation = (double[]) cityLocationObject;
-        String[] weatherData = weatherAPI.getCurrentWeather(cityLocation[0], cityLocation[1]);
+    public String[] getCurrentWeatherDataMetric(String[] cityData) {
+        String[] weatherData = {};
+        weatherData = weatherAPIMetric.getCurrentWeather(Double.valueOf(cityData[0]), Double.valueOf(cityData[1]));
         
         return weatherData;
     }
     
-    public String[][] getDailyForecast(TextField textField) {
-        String[] cityData = textField.getText().split(",", 3);
-        Object cityLocationObject = weatherAPI.lookUpLocation(cityData[0], "", cityData[1]);
-        double[] cityLocation = (double[]) cityLocationObject;
-        String[][] weatherData = weatherAPI.getForecast(cityLocation[0], cityLocation[1]);
+    public String[][] getDailyForecastMetric(String[] cityData) {
+        String[][] weatherData = {};
+        weatherData = weatherAPIMetric.getForecast(Double.valueOf(cityData[0]), Double.valueOf(cityData[1]));
         
         return weatherData;
     }
     
-    public String[][] getHourlyForecast(TextField textField) {
-        String[] cityData = textField.getText().split(",", 3);
-        Object cityLocationObject = weatherAPI.lookUpLocation(cityData[0], "", cityData[1]);
-        double[] cityLocation = (double[]) cityLocationObject;
-        Object weatherDataObject = weatherAPI.getHourlyForecast(cityLocation[0], cityLocation[1]);
+    public String[][] getHourlyForecastMetric(String[] cityData) {
+        Object weatherDataObject;
+        weatherDataObject = weatherAPIMetric.getHourlyForecast(Double.valueOf(cityData[0]), Double.valueOf(cityData[1]));
         String[][] weatherData = (String[][]) weatherDataObject;
 
         return weatherData;
     }
 
-    public String[] changeCurrentWeatherUnit(String[] weatherData) {
-        // String[] weatherInfo = {temperature, feels_like, min_temp, max_temp,humidity,description,main_sky,wind_speed};
-        Double newTemp = Double.valueOf(weatherData[0]) * 1.8 + 32;
-        Double newFeelsLike = Double.valueOf(weatherData[1]) * 1.8 + 32;
-        Double newMinTemp = Double.valueOf(weatherData[2]) * 1.8 + 32;
-        Double newMaxTemp = Double.valueOf(weatherData[3]) * 1.8 + 32;
-        Double newWindSpeed = Double.valueOf(weatherData[7]);
+    public String[] getCurrentWeatherDataImperial(String[] cityData) {
+        String[] weatherData = {};
+        weatherData = weatherAPIImperial.getCurrentWeather(Double.valueOf(cityData[0]), Double.valueOf(cityData[1]));
 
+        return weatherData;
+    }
+    
+    public String[][] getDailyForecastImperial(String[] cityData) {
+        String[][] weatherData = {};
+        weatherData = weatherAPIImperial.getForecast(Double.valueOf(cityData[0]), Double.valueOf(cityData[1]));
         
-        String[] result = {};
-        return result;
+        return weatherData;
+    }
+    
+    public String[][] getHourlyForecastImperial(String[] cityData) {
+        Object weatherDataObject;
+        weatherDataObject = weatherAPIImperial.getHourlyForecast(Double.valueOf(cityData[0]), Double.valueOf(cityData[1]));
+        String[][] weatherData = (String[][]) weatherDataObject;
+
+        return weatherData;
     }
 }
