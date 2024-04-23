@@ -53,63 +53,48 @@ public class WeatherApp extends Application {
     }
     
     /**
-     * This function displays the current weather data just to 
-     * demonstrate that the weather data has been successfully extracted from OpenWeather.
-     * The weather data is displayed in the top panel
+     * Testing lookUpLocation and getCurrentWeather
      */
     private void display_current_Weather() {
-        // Main thing is to ask user to specify the location
-        Object weather_location_object = weatherAPI.lookUpLocation("Ha Noi","","VN"); // Wrong country code fail the program
-        double[] weather_location = (double[]) weather_location_object;
-        double latitude = weather_location[0];
-        double longitude = weather_location[1];
-        
+        String[] weather_location = weatherAPI.lookUpLocation("Portland","","US"); 
+             
+        if(weather_location != null){
+        double latitude = Double.parseDouble(weather_location[0]);
+        double longitude = Double.parseDouble(weather_location[1]);
+        System.out.println(weather_location[2]+" "+ weather_location[3]);
         // Testing output of the function
         String[] weatherData = weatherAPI.getCurrentWeather(latitude,longitude );
-        StringBuilder sb = new StringBuilder();
+
         for (String str : weatherData) {
-            str += " ";
-            sb.append(str);
             System.out.println(str);         
         }
-        String string_data = sb.toString();
-        String display = "Weather" + ": \n" + string_data;
-
-        // Update label in the top panel with weather data
-        Label topLabel = (Label) ((HBox) ((VBox) ((BorderPane) ((Scene) Stage
-                .getWindows().stream().findFirst().orElse(null).getScene()).getRoot())
-                .getCenter()).getChildren().get(0)).getChildren().get(0);
-
-        topLabel.setText(display);
+        }
+       
     } 
     
      /**
-     * This function displays today and the next 3 days weather forecast data 
-     * just to demonstrate that the weather data has been successfully extracted 
-     * from OpenWeather.
-     * The weather data is displayed in the below panel
+     * Testing lookUpLocation, getForecast, and getHourlyForecast
      */
     private void display_forecast(){
         // Main thing is to ask user to specify the location
-        Object weather_location_object = weatherAPI.lookUpLocation("Ha Noi","","VN"); 
-        double[] weather_location = (double[]) weather_location_object;
-        double latitude = weather_location[0];
-        double longitude = weather_location[1];
+        String[] weather_location = weatherAPI.lookUpLocation("Ha Noi","","VN"); 
+      
+        double latitude = Double.parseDouble(weather_location[0]);
+        double longitude = Double.parseDouble(weather_location[1]);
         
         // Testing output of the two functions
         String forecast_data[][] = weatherAPI.getForecast(latitude,longitude );
         Object hourly_forecast_object = weatherAPI.getHourlyForecast(latitude, longitude);
         String[][] hourly_forecast = (String [][]) hourly_forecast_object;
 
-        for (String[] day : forecast_data) {
+        for (String[] day : forecast_data) { // priting forecast data
             for (String info : day) {
                 System.out.print(info + " ");
             }
             System.out.println();
-        }
-        
+        }       
                 // Loop through each row
-        for (int i = 0; i < hourly_forecast.length; i++) {
+        for (int i = 0; i < hourly_forecast.length; i++) { // printing hourly forecast data
             // Loop through each column in the current row
             for (int j = 0; j < hourly_forecast[i].length; j++) {
                 // Print the current element

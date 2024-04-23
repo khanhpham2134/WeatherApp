@@ -24,11 +24,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.TimeZone;
 import java.time.ZoneOffset;
+import java.util.NoSuchElementException;
 
 public class WeatherData implements iMyAPI {
 
@@ -137,21 +139,19 @@ public class WeatherData implements iMyAPI {
     
     // implement iAPI
     /**
-     * Return the coordinate of the wanted location. If country_code is provided,
-     * then only 1 specific coordinate of the 1 specific location is returned. If 
-     * the country_code isn't provided (which should be avoided), the query will extract
-     * at maximum 5 coordinates of possible 5 location with the same name, but the
-     * function only returns the first coordinate for the first location.
-     * The function works by reading data from an URL with the Scanner class and 
-     * parsing of the resulting JSON string with the Gson library. 
+     * Return the coordinate, the state (if it is a US location), and the country code 
+     * of the wanted location. If the user only provides two parameters, the function 
+     * automatically uses them as loc_name and country_code. If the user wants to specify 
+     * the state, they must provide all three parameters separated by commas.
      *  
      * @param loc_name: name of the location
      * @param state_name: name of the state if it's an US location
      * @param country_code: country code
-     * @return a double array that contains latitude and longitude
+     * @return a String array that contains latitude, longitude, state or empty string,
+     * and country code.
      */
     @Override
-    public double[] lookUpLocation(String loc_name, String state_name, String country_code) {
+    public String[] lookUpLocation(String loc_name, String state_name, String country_code) {
         // changing the return type to map <country_code, double[]>
         final String Open_weather_geocoding = "http://api.openweathermap.org/geo/1.0/direct";
         ERROR_LOCATION = false;
@@ -178,18 +178,34 @@ public class WeatherData implements iMyAPI {
             // Parse a JSON array of location 
             Gson gson = new Gson();
             JsonArray json_array = JsonParser.parseString(json_string.toString()).getAsJsonArray();        
+            /*
+            if (json_array.size() == 0) {
+            // Handle empty JSON array case
+            throw new NoSuchElementException("No location data found.");
+            }*/
             JsonElement json_element = json_array.get(0);  // json_array actually only has 1 element
-            double latitude = json_element.getAsJsonObject().get("lat").getAsDouble();
-            double longitude = json_element.getAsJsonObject().get("lon").getAsDouble();
-        
-            return new double[] {latitude, longitude};
+            String latitude = json_element.getAsJsonObject().get("lat").getAsString();
+            String longitude = json_element.getAsJsonObject().get("lon").getAsString();
+            String Country = json_element.getAsJsonObject().get("country").getAsString();
+            String state = ""; // Default value is an empty string
+            JsonElement stateElement = json_element.getAsJsonObject().get("state");
+            if (stateElement != null) {
+                state = stateElement.getAsString(); // Update state if it's present in the JSON
+            }
+            return new String[] {latitude, longitude,state,Country};
         }
         
         catch(IOException e){
             e.printStackTrace();
             ERROR_LOCATION = true;
-            return null;
-        }
+            System.out.println("Catch block IOException is executed");
+            return null;          
+    }   
+        catch (JsonSyntaxException | NoSuchElementException | IndexOutOfBoundsException e) {
+        ERROR_LOCATION = true;
+        System.out.println("Error API query due to mismatched loc_name and country_code");
+        return null;       
+    }
         
         finally{ 
             if (scanner != null) {
