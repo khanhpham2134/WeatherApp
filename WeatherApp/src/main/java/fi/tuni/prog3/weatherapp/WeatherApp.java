@@ -35,6 +35,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 
 
 /**
@@ -44,6 +46,11 @@ public class WeatherApp extends Application {
     private final iMyAPI weatherAPI = new WeatherData("metric"); 
     // By default the unit of the program is metric
     private final DisplayHandler displayHandler = new DisplayHandler();
+    
+    private String cityName;
+    private TextField searchBar;
+    private Button searchButton;
+    private ToggleButton saveFavButton;
 
     @Override
     public void start(Stage stage) {        
@@ -83,8 +90,9 @@ public class WeatherApp extends Application {
         currentWeatherDataBox.setAlignment(Pos.CENTER);
         Text temp = new Text("12*c");
         temp.setStyle("-fx-font: 45 arial;");
-        // Image description = new Image("/resources/icons/day-clear.png");
-        // ImageView descriptionView = new ImageView(description);
+        //Image description = new Image("/icons/day-clear.png");
+        //Image description = new Image(getClass().getResourceAsStream("/icons/day-clear.png"));
+        //ImageView descriptionView = new ImageView(description);
         currentWeatherDataBox.getChildren().addAll(temp);
         currentWeather.setCenter(currentWeatherDataBox);
     
@@ -99,14 +107,38 @@ public class WeatherApp extends Application {
         data.getChildren().addAll(feelsLike, humid, wind);
         additionalDataBox.setLeft(data);
         VBox buttons = new VBox(15);
-        Button setFav = new Button("Favorite");
-        setFav.setPrefWidth(100);
+        // Load previously saved favourites
+        readToFile();
+        updateFavBox();
+        
+        //Button setFav = new Button("Favorite");
+        saveFavButton = new ToggleButton("Save as favourite");
+
+        // Update the button state based on the favorite status
+        updatesaveFavButtonState();
+
+        // Add event handler to toggle the favorite status of the city when the button is clicked
+        saveFavButton.setOnAction(event -> {
+            if (saveFavButton.isSelected()) {
+                // If the button is selected, add the city to favorites
+                favourites.add(cityName);
+            } else {
+                // If the button is not selected, remove the city from favorites
+                favourites.remove(cityName);
+            } 
+            updateFavBox();
+            updatesaveFavButtonState(); // Update the button state after toggling favorite status
+        });
+ 
+        
+       
+        saveFavButton.setPrefWidth(100);
         Button changeUnit = new Button("Change Unit");
         changeUnit.setPrefWidth(100);
         changeUnit.setOnAction((ActionEvent event) -> {
 
         });
-        buttons.getChildren().addAll(setFav, changeUnit);
+        buttons.getChildren().addAll(saveFavButton, changeUnit);
         additionalDataBox.setRight(buttons);
         currentWeather.setBottom(additionalDataBox);
 
@@ -185,10 +217,11 @@ public class WeatherApp extends Application {
         // Search Bar
         BorderPane searchBarSection = new BorderPane();
         
-        TextField searchBar = new TextField();
+        searchBar = new TextField();
+        searchBar.setPromptText("City, (State,) Country Code");
         searchBarSection.setCenter(searchBar);
         
-        Button searchButton = new Button("Search");
+        searchButton = new Button("Search");
         searchButton.setOnAction((ActionEvent event) -> {
             boolean inputIsInvalid = displayHandler.ifInputValid(searchBar);
             if (inputIsInvalid) {
@@ -197,9 +230,10 @@ public class WeatherApp extends Application {
                 a.show();
             } else {
                 // Change the city name
-                String cityName = searchBar.getText().split(",", 3)[0];
+                cityName = searchBar.getText().split(",", 3)[0];
                 city.setText(cityName.toUpperCase());
                 
+                updatesaveFavButtonState();
                 // Change current weather section
                 String[] currentWeatherData = displayHandler.getCurrentWeatherData(searchBar);
                 temp.setText(currentWeatherData[0]);
@@ -253,8 +287,11 @@ public class WeatherApp extends Application {
         });
         searchBarSection.setLeft(searchButton);
         
-        Button historyButton = new Button("History");
-        searchBarSection.setRight(historyButton);
+        var quitButton = getQuitButton();
+        var favBox = favouritesDropBox();
+        //Button historyButton = new Button("History");
+        searchBarSection.setRight(favBox);
+        
         
         // Adding Sections
         root.setTop(searchBarSection);
@@ -266,6 +303,7 @@ public class WeatherApp extends Application {
         stage.setScene(scene);
         stage.setTitle("WeatherApp");
         stage.show(); 
+
     }
     
     public static void main(String[] args) {
@@ -340,8 +378,16 @@ public class WeatherApp extends Application {
             if (favouritesBox == null) {
                 favouritesBox = new ComboBox<>();
             }
-    
-    
+            favouritesBox.setPromptText("Favorites");
+            
+            // Add selected favourite to search box
+            favouritesBox.setOnAction(event -> {
+                String selectedFavourite = favouritesBox.getValue();
+                if (selectedFavourite != null) {
+                    searchBar.setText(selectedFavourite);
+                    searchButton.fire();
+                }
+            });
             // Check if favourites is null or empty before setting items
             if (favouritesBox.getItems().isEmpty() && favourites != null && !favourites.isEmpty()) {
                 favouritesBox.getItems().setAll(favourites);
@@ -359,96 +405,28 @@ public class WeatherApp extends Application {
         favouritesDropBox().getItems().clear();
         favouritesDropBox().getItems().setAll(favourites);
     }
+    private void updatesaveFavButtonState() {
+        if (favourites.contains(cityName)) {
+            saveFavButton.setSelected(true);
+            saveFavButton.setText("Unsave");
+        } else {
+            saveFavButton.setSelected(false);
+            saveFavButton.setText("Save as favourite");
+        }
+    }
 
-    
 }
+    
+
 
 /*
-        // Empty favourites-button
-        Button clearFavButton = new Button("Clear favourites");
+    // Empty favourites-button, add this next to the search bar
+    Button clearFavButton = new Button("Clear favourites");
 
-        clearFavs.setOnAction(event -> {
-            favourites.clear();
-            updateFavBox();
-        });
-
-
-        // Creating a button that will save/unsave favourite locations
-
-        root.getChildren().add(new Label("Favourites:")); 
-  
-        // Creating a ToggleGroup 
-        ToggleGroup group = new ToggleGroup(); 
-  
-        // Creating new Toggle buttons. 
-        ToggleButton saveFavButton = new ToggleButton("Save"); 
-        ToggleButton unsaveFavButton = new ToggleButton("Unsave"); 
-  
-        // Set toggle group 
-        // In a group, maximum only 
-        // one button is selected 
-        saveFavButton.setToggleGroup(group); 
-        unsaveFavButton.setToggleGroup(group); 
-  
-        unsaveFavButton.setOnAction(event -> {
-            if (favourites.contains(city)) {
-                favourites.remove(city);
-                updateFavBox();}
-        });
-
-        saveFavButton.setOnAction(event -> {
-            favourites.add(city);
-            updateFavBox();
-        });
-  
-        // unsave button is selected at first by default 
-        unsaveFavButton.setSelected(true); 
-  
-        root.getChildren().addAll(saveFavButton, unsaveFavButton); 
-
-        // Load previously saved favourites
-        readToFile();
+    clearFavs.setOnAction(event -> {
+        favourites.clear();
         updateFavBox();
-} 
+    });
 
-
-
-    private Button getQuitButton() {
-        //Creating a button.
-        Button button = new Button("Quit");
-
-        //Adding an event to the button to terminate the application.
-        button.setOnAction((ActionEvent event) -> {
-            writeToFile();
-            Platform.exit();
-        });
-
-        return button;
-    }
-    
-    // Save favourite locations
-    
-    private List<String> favourites = new ArrayList<String>();
-    private ComboBox<String> favouritesBox = favouritesDropBox();
-    
-    private void writeToFile() {
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("favourites.txt"))) {
-            for (String location : favourites) {
-                writer.write(location);
-                writer.newLine();
-            }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        /* try (BufferedWriter writer = new BufferedWriter(new FileWriter("current_location.txt"))) {
-            writer.write(city);
-            writer.close();
-        }
-
-        catch (IOException e) {
-            e.printStackTrace();
-        }*/
+}*/
 
