@@ -86,13 +86,15 @@ public class WeatherApp extends Application {
         String forecast_data[][] = weatherAPI.getForecast(latitude,longitude );
         Object hourly_forecast_object = weatherAPI.getHourlyForecast(latitude, longitude);
         String[][] hourly_forecast = (String [][]) hourly_forecast_object;
-
+        
+        /*
         for (String[] day : forecast_data) { // priting forecast data
             for (String info : day) {
                 System.out.print(info + " ");
             }
             System.out.println();
-        }       
+        }*/
+        
                 // Loop through each row
         for (int i = 0; i < hourly_forecast.length; i++) { // printing hourly forecast data
             // Loop through each column in the current row
