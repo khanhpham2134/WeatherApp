@@ -196,6 +196,7 @@ public class WeatherApp extends Application {
         HBox searchBarSection = new HBox();
         
         TextField searchBar = new TextField();
+        searchBar.setPrefWidth(475);
         
         Button searchButton = new Button("Search");
         searchButton.setOnAction((ActionEvent event) -> {
