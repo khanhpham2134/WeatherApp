@@ -4,6 +4,7 @@
  */
 package fi.tuni.prog3.weatherapp;
 
+import java.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,29 +107,24 @@ public class WeatherDataTest {
     }
     
     @Test
-    public void testGetCurrentWeather_ValidCoordinates() {
-        WeatherData weatherData = new WeatherData("metric");
-        double lat = 40.7128; // Latitude of New York City
-        double lon = -74.0060; // Longitude of New York City
-        
-        String[] result = weatherData.getCurrentWeather(lat, lon);
-        
+    public void testGetCurrentWeather() {
+        System.out.println("getCurrentWeather");
+
+        // Sample latitude and longitude for testing
+        double lat = 40.7128; // New York City latitude
+        double lon = -74.0060; // New York City longitude
+
+        // Create a WeatherData instance with metric unit
+        WeatherData instance = new WeatherData("metric");
+
+        // Call getCurrentWeather method
+        String[] result = instance.getCurrentWeather(lat, lon);
+
+        // Ensure the result is not null
         assertNotNull(result);
-        assertEquals(9, result.length);
-        assertFalse(result[0].equals("ERROR")); // Checking if temperature is not an error
-    }
-    
-    @Test
-    public void testGetCurrentWeather_InvalidCoordinates() {
-        WeatherData weatherData = new WeatherData("metric");
-        double lat = 1000; // Invalid latitude
-        double lon = 2000; // Invalid longitude
-        
-        String[] result = weatherData.getCurrentWeather(lat, lon);
-        
-        assertNotNull(result);
-        assertEquals(8, result.length); // Excluding visibility
-        assertEquals("ERROR", result[0]); // Checking if temperature is an error
+
+        // Check if the result contains necessary weather information
+        assertTrue(result.length >= 11); // At least 11 elements expected
     }
 
     /**

@@ -7,8 +7,12 @@ package fi.tuni.prog3.weatherapp;
 /**
  *
  * @author bcmivu
+ * AI tool (ChatGPT 3.5) was used in this class file to search for libraries
+ * that serve for suitable purposes of author. It is also used to search for 
+ * different methods of multiple classes, like String and double, and their 
+ * syntax, which is depended on author's need. I think it helped me save a lot 
+ * of time.
  */
-// import java.util.logging.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,9 +32,12 @@ import com.google.gson.JsonSyntaxException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-
 import java.util.NoSuchElementException;
 
+/*
+* A class that implement the iMyAPI interface which extracts data 
+* from the OpenWeatherMap API.
+*/
 public class WeatherData implements iMyAPI {
 
     private final String API_KEY;
@@ -208,7 +215,8 @@ public class WeatherData implements iMyAPI {
 
      * @return       An array of string containing the current temperature, 
      * feels like, min and max temperature (in metric, Celsius), humidity, description,
-     * sky, and wind speed (in metric, m/s), and visibility IN THIS ORDER.
+     * sky, and wind speed (in metric, m/s), current local time, local sunrise and 
+     * local sunset time IN THIS ORDER.
      * 
      */    
     @Override
@@ -248,11 +256,29 @@ public class WeatherData implements iMyAPI {
 
             // Parsing JSON response
             JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
+            
+            // Retrieve timezone offset from JSON response
+            int timezoneOffset = jsonResponse.get("timezone").getAsInt();
+            ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(timezoneOffset);
+            ZoneId zoneId = ZoneId.ofOffset("UTC", zoneOffset);
 
             // Extracting relevant weather information
             double visibility = jsonResponse.get("visibility").getAsDouble() / 1000; // Convert to km
             String visibilityString = String.valueOf(visibility) + "km";
+            
+            long dateTime = jsonResponse.get("dt").getAsLong();
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(java.time.Instant.ofEpochSecond(dateTime), zoneId);
+            String localDateTimeString = localDateTime.format(java.time.format.DateTimeFormatter.ofPattern("HH"));
 
+            
+            JsonObject sys = jsonResponse.getAsJsonObject("sys");
+            long sunRise = sys.get("sunrise").getAsLong();
+            LocalDateTime localsunRise = LocalDateTime.ofInstant(java.time.Instant.ofEpochSecond(sunRise), zoneId);
+            String local_sun_rise = localsunRise.format(java.time.format.DateTimeFormatter.ofPattern("HH"));
+            long sunSet = sys.get("sunset").getAsLong();
+            LocalDateTime localsunSet = LocalDateTime.ofInstant(java.time.Instant.ofEpochSecond(sunSet), zoneId);
+            String local_sun_set = localsunSet.format(java.time.format.DateTimeFormatter.ofPattern("HH"));
+            
             JsonObject wind = jsonResponse.getAsJsonObject("wind");
             String windSpeed = wind.get("speed").getAsString() + (UNIT.equals("metric") ? "m/s" : "mph");
 
@@ -276,13 +302,13 @@ public class WeatherData implements iMyAPI {
 
             // Constructing the array with weather information
             String[] weatherInfo = {temperatureString, feelsLikeString, minTempString, maxTempString,
-                    humidity, description, mainSky, windSpeed, visibilityString};
+                    humidity, description, mainSky, windSpeed, localDateTimeString, local_sun_rise, local_sun_set};
 
             return weatherInfo;
         } catch (IOException e) {
             e.printStackTrace();
-            // In case of error, return an array with error messages
-            return new String[]{"ERROR", "ERROR", "ERROR", "ERROR", "ERROR", "ERROR", "ERROR", "ERROR"};
+            // In case of error, return null
+            return null;
         }
     }
     
