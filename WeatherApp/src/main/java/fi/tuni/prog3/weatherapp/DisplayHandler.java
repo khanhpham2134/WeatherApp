@@ -26,8 +26,7 @@ public class DisplayHandler {
         return weatherAPIMetric.get_error_flag();
     }
     
-    public String[] getCityInformation(TextField textField) {
-        String[] cityData = textField.getText().split(",", 10);
+    public String[] getCityInformation(String[] cityData) {
         String[] cityLocation = {};
         if (cityData.length == 1) {
             cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], "", "");

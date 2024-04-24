@@ -1,19 +1,16 @@
 package fi.tuni.prog3.weatherapp;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.effect.BlurType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -24,10 +21,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
 
 
 /**
@@ -329,7 +322,8 @@ public class WeatherApp extends Application {
             if (isMetric) {
                 boolean inputIsInvalid = displayHandler.ifInputValid(searchBar);
                 String input = searchBar.getText();
-                if (input.split(", ", 3)[0].strip() == "") {
+                String[] inputParams = input.split(",", 10);
+                if (inputParams[0].strip() == "") {
                     Alert a = new Alert(AlertType.WARNING); 
                     a.setContentText("Blank Input");
                     a.show();
@@ -341,8 +335,8 @@ public class WeatherApp extends Application {
                     searchBar.clear();
                 } else {
                     // Change the city name
-                    String cityName = searchBar.getText().split(",", 3)[0];
-                    String[] cityInfo = displayHandler.getCityInformation(searchBar);
+                    String cityName = inputParams[0];
+                    String[] cityInfo = displayHandler.getCityInformation(inputParams);
                     currentCityData = cityInfo;
                     if (cityInfo[2] == "") {
                         city.setText(cityName.toUpperCase() + ", " + cityInfo[3]);
@@ -392,7 +386,8 @@ public class WeatherApp extends Application {
             } else {
                 boolean inputIsInvalid = displayHandler.ifInputValid(searchBar);
                 String input = searchBar.getText();
-                if (input.split(", ", 3)[0].strip() == "") {
+                String[] inputParams = input.split(",", 10);
+                if (inputParams[0].strip() == "") {
                     Alert a = new Alert(AlertType.WARNING); 
                     a.setContentText("Blank Input");
                     a.show();
@@ -404,8 +399,8 @@ public class WeatherApp extends Application {
                     searchBar.clear();
                 } else {
                     // Change the city name
-                    String cityName = searchBar.getText().split(",", 3)[0];
-                    String[] cityInfo = displayHandler.getCityInformation(searchBar);
+                    String cityName = inputParams[0];
+                    String[] cityInfo = displayHandler.getCityInformation(inputParams);
                     currentCityData = cityInfo;
                     if (cityInfo[2] == "") {
                         city.setText(cityName.toUpperCase() + ", " + cityInfo[3]);
