@@ -22,7 +22,7 @@ public class ImageHandler {
                 return "/icons/day-clear.png";
 
             case "Snow":
-                return "/icons/day-cloudy-showy.png";
+                return "/icons/day-cloudy-snowy.png";
 
             case "Clouds":
                 return "/icons/day-cloudy.png";
