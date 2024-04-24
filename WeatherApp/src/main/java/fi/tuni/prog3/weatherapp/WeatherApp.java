@@ -39,6 +39,15 @@ public class WeatherApp extends Application {
     private final ImageHandler imageHandler = new ImageHandler();
     private boolean isMetric = true;
     private String[] currentCityData = {};
+    // Daily forecast Nodes
+    private Text[][] dailyForecastTexts = new Text[4][3];
+    private ImageView[] dailyForecastImages = new ImageView[4];
+    // Hourly forecast Nodes
+    private Text[][] hourlyForecastTexts = new Text[24][4];
+    private ImageView[] hourlyForecastImages = new ImageView[24];
+    // Current forecast Nodes
+    private Text[] currentWeatherTexts = new Text[7];
+    private ImageView currentWeatherView; 
 
     @Override
     public void start(Stage stage) {        
@@ -66,6 +75,10 @@ public class WeatherApp extends Application {
         Region r = new Region();
         HBox.setHgrow(r, Priority.ALWAYS);
         day1.getChildren().addAll(date1, r, minTemp1, maxTemp1, descriptionView1);
+        dailyForecastTexts[0][0] = date1;
+        dailyForecastTexts[0][1] = minTemp1;
+        dailyForecastTexts[0][2] = maxTemp1;
+        dailyForecastImages[0] = descriptionView1;
         
         HBox day2 = new HBox(15);
         day2.setAlignment(Pos.CENTER);
@@ -82,6 +95,10 @@ public class WeatherApp extends Application {
         Region r2 = new Region();
         HBox.setHgrow(r2, Priority.ALWAYS);
         day2.getChildren().addAll(date2, r2, minTemp2, maxTemp2, descriptionView2);
+        dailyForecastTexts[1][0] = date2;
+        dailyForecastTexts[1][1] = minTemp2;
+        dailyForecastTexts[1][2] = maxTemp2;
+        dailyForecastImages[1] = descriptionView2;
         
         HBox day3 = new HBox(15);
         day3.setAlignment(Pos.CENTER);
@@ -98,6 +115,10 @@ public class WeatherApp extends Application {
         Region r3 = new Region();
         HBox.setHgrow(r3, Priority.ALWAYS);
         day3.getChildren().addAll(date3, r3, minTemp3, maxTemp3, descriptionView3);
+        dailyForecastTexts[2][0] = date3;
+        dailyForecastTexts[2][1] = minTemp3;
+        dailyForecastTexts[2][2] = maxTemp3;
+        dailyForecastImages[2] = descriptionView3;
         
         HBox day4 = new HBox(15);
         day4.setAlignment(Pos.CENTER);
@@ -114,6 +135,10 @@ public class WeatherApp extends Application {
         Region r4 = new Region();
         HBox.setHgrow(r4, Priority.ALWAYS);
         day4.getChildren().addAll(date4, r4, minTemp4, maxTemp4, descriptionView4);
+        dailyForecastTexts[3][0] = date4;
+        dailyForecastTexts[3][1] = minTemp4;
+        dailyForecastTexts[3][2] = maxTemp4;
+        dailyForecastImages[3] = descriptionView4;
         
         fewDaysForecast.getChildren().addAll(day1, day2, day3, day4);
         
@@ -121,8 +146,6 @@ public class WeatherApp extends Application {
         GridPane hourlyForecast = new GridPane();
         hourlyForecast.setHgap(10);
         hourlyForecast.setVgap(10);
-        Text[][] textList = new Text[24][4];
-        ImageView[] imageViews = new ImageView[24];
         for (int hour = 0; hour < 24; hour++) {  
             Text hourText = new Text();
             hourText.setStyle("-fx-font: 20 arial; -fx-font-weight: bold;");
@@ -141,11 +164,11 @@ public class WeatherApp extends Application {
             Text humidity = new Text();
             humidity.setStyle("-fx-font: 20 arial;");
             hourlyForecast.add(humidity, hour, 4);
-            textList[hour][0] = hourText;
-            textList[hour][1] = degree;
-            textList[hour][2] = windSpeed;
-            imageViews[hour] = descriptionHourView;
-            textList[hour][3] = humidity;
+            hourlyForecastTexts[hour][0] = hourText;
+            hourlyForecastTexts[hour][1] = degree;
+            hourlyForecastTexts[hour][2] = windSpeed;
+            hourlyForecastImages[hour] = descriptionHourView;
+            hourlyForecastTexts[hour][3] = humidity;
         }
         
         ScrollPane scrollPane = new ScrollPane();
@@ -164,6 +187,7 @@ public class WeatherApp extends Application {
         lowestTemp.setStyle("-fx-font: 20 arial;");
         lowestTempBox.getChildren().add(lowestTemp);
         currentWeather.setLeft(lowestTempBox);
+        currentWeatherTexts[0] = lowestTemp;
     
         VBox highestTempBox = new VBox();
         highestTempBox.setAlignment(Pos.CENTER);
@@ -171,6 +195,7 @@ public class WeatherApp extends Application {
         highestTemp.setStyle("-fx-font: 20 arial;");
         highestTempBox.getChildren().add(highestTemp);
         currentWeather.setRight(highestTempBox);
+        currentWeatherTexts[1] = highestTemp;
     
         VBox currentWeatherTextBox = new VBox(10);
         currentWeatherTextBox.setAlignment(Pos.CENTER);
@@ -180,26 +205,33 @@ public class WeatherApp extends Application {
         city.setStyle("-fx-font: 20 arial;");
         currentWeatherTextBox.getChildren().addAll(currentWeatherLabel, city);
         currentWeather.setTop(currentWeatherTextBox);
+        currentWeatherTexts[2] = city;
     
         VBox currentWeatherDataBox = new VBox();
         currentWeatherDataBox.setAlignment(Pos.CENTER);
+
         Text temp = new Text("12*c");
-        temp.setStyle("-fx-font: 45 arial;");       
+        temp.setStyle("-fx-font: 45 arial;");
+        currentWeatherTexts[3] = temp;       
         Image description = new Image(getClass().getResourceAsStream("/icons/day-clear.png"));
         ImageView descriptionView = new ImageView(description);
         descriptionView.setFitHeight(90);
         descriptionView.setFitWidth(90);
+        currentWeatherView = descriptionView;
         currentWeatherDataBox.getChildren().addAll(temp, descriptionView);
         currentWeather.setCenter(currentWeatherDataBox);
         BorderPane additionalDataBox = new BorderPane();
         VBox data = new VBox();
         Text feelsLike = new Text("FEELS LIKE: ");
         feelsLike.setStyle("-fx-font: 23 arial;");
+        currentWeatherTexts[4] = feelsLike;
         Text humid = new Text("HUMIDITY: "); 
         humid.setStyle("-fx-font: 23 arial;");
+        currentWeatherTexts[5] = humid;
         Text wind = new Text("WIND SPEED: ");
         wind.setStyle("-fx-font: 23 arial;");
         data.getChildren().addAll(feelsLike, humid, wind);
+        currentWeatherTexts[6] = wind;
         additionalDataBox.setLeft(data);
         VBox buttons = new VBox(15);
         Button setFav = new Button("Favorite");
@@ -235,10 +267,10 @@ public class WeatherApp extends Application {
                 // Change hourly forecast
                 String[][] hourlyForecastData = displayHandler.getHourlyForecastMetric(currentCityData);
                 for (int hour = 0; hour < 24; hour++) {
-                    textList[hour][0].setText(hourlyForecastData[hour][0] + ":00");
-                    textList[hour][1].setText(hourlyForecastData[hour][1]);
-                    textList[hour][2].setText(hourlyForecastData[hour][2]);
-                    textList[hour][3].setText(hourlyForecastData[hour][4]);
+                    hourlyForecastTexts[hour][0].setText(hourlyForecastData[hour][0] + ":00");
+                    hourlyForecastTexts[hour][1].setText(hourlyForecastData[hour][1]);
+                    hourlyForecastTexts[hour][2].setText(hourlyForecastData[hour][2]);
+                    hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
                 }
 
                 isMetric = true;
@@ -271,10 +303,10 @@ public class WeatherApp extends Application {
                 // Change hourly forecast
                 String[][] hourlyForecastData = displayHandler.getHourlyForecastImperial(currentCityData);
                 for (int hour = 0; hour < 24; hour++) {
-                    textList[hour][0].setText(hourlyForecastData[hour][0] + ":00");
-                    textList[hour][1].setText(hourlyForecastData[hour][1]);
-                    textList[hour][2].setText(hourlyForecastData[hour][2]);
-                    textList[hour][3].setText(hourlyForecastData[hour][4]);
+                    hourlyForecastTexts[hour][0].setText(hourlyForecastData[hour][0] + ":00");
+                    hourlyForecastTexts[hour][1].setText(hourlyForecastData[hour][1]);
+                    hourlyForecastTexts[hour][2].setText(hourlyForecastData[hour][2]);
+                    hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
                 }
 
                 isMetric = false;
@@ -289,7 +321,7 @@ public class WeatherApp extends Application {
         searchBarSection.setAlignment(Pos.CENTER);
         
         TextField searchBar = new TextField();
-        searchBar.setPrefWidth(330);
+        searchBar.setPrefWidth(230);
         searchBar.setPromptText("City, (State,) Country Code");
         
         Button searchButton = new Button("Search");
@@ -350,11 +382,11 @@ public class WeatherApp extends Application {
                     // Change hourly forecast
                     String[][] hourlyForecastData = displayHandler.getHourlyForecastMetric(cityInfo);
                     for (int hour = 0; hour < 24; hour++) {
-                        textList[hour][0].setText(hourlyForecastData[hour][0] + ":00");
-                        textList[hour][1].setText(hourlyForecastData[hour][1]);
-                        textList[hour][2].setText(hourlyForecastData[hour][2]);
-                        imageViews[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
-                        textList[hour][3].setText(hourlyForecastData[hour][4]);
+                        hourlyForecastTexts[hour][0].setText(hourlyForecastData[hour][0] + ":00");
+                        hourlyForecastTexts[hour][1].setText(hourlyForecastData[hour][1]);
+                        hourlyForecastTexts[hour][2].setText(hourlyForecastData[hour][2]);
+                        hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
+                        hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
                     }
                 } 
             } else {
@@ -413,11 +445,11 @@ public class WeatherApp extends Application {
                     // Change hourly forecast
                     String[][] hourlyForecastData = displayHandler.getHourlyForecastImperial(cityInfo);
                     for (int hour = 0; hour < 24; hour++) {
-                        textList[hour][0].setText(hourlyForecastData[hour][0] + ":00");
-                        textList[hour][1].setText(hourlyForecastData[hour][1]);
-                        textList[hour][2].setText(hourlyForecastData[hour][2]);
-                        imageViews[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
-                        textList[hour][3].setText(hourlyForecastData[hour][4]);
+                        hourlyForecastTexts[hour][0].setText(hourlyForecastData[hour][0] + ":00");
+                        hourlyForecastTexts[hour][1].setText(hourlyForecastData[hour][1]);
+                        hourlyForecastTexts[hour][2].setText(hourlyForecastData[hour][2]);
+                        hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
+                        hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
                     }
                 } 
 
@@ -428,7 +460,8 @@ public class WeatherApp extends Application {
         Button favButton = new Button("Favorite");
         Button quitButton = new Button("Quit");
         Button historyButton = new Button("History");
-        searchBarSection.getChildren().addAll(searchBar, searchButton, historyLabel, historyButton, favLabel, favButton, quitButton);
+        Button clearHistoryButton = new Button("Clear History");
+        searchBarSection.getChildren().addAll(searchBar, searchButton, historyLabel, historyButton, clearHistoryButton, favLabel, favButton, quitButton);
 
 
         // Adding Sections
