@@ -121,7 +121,7 @@ public class WeatherApp extends Application {
         GridPane hourlyForecast = new GridPane();
         hourlyForecast.setHgap(10);
         hourlyForecast.setVgap(10);
-        Text[][] textList = new Text[24][5];
+        Text[][] textList = new Text[24][4];
         ImageView[] imageViews = new ImageView[24];
         for (int hour = 0; hour < 24; hour++) {  
             Text hourText = new Text();
@@ -130,26 +130,22 @@ public class WeatherApp extends Application {
             Text degree = new Text();
             degree.setStyle("-fx-font: 20 arial;");
             hourlyForecast.add(degree, hour, 1);
-            Text lowestTempHourly = new Text();
-            lowestTempHourly.setStyle("-fx-font: 20 arial;");
-            hourlyForecast.add(lowestTempHourly, hour, 2);
-            Text highestTempHourly = new Text();
-            highestTempHourly.setStyle("-fx-font: 20 arial;");
-            hourlyForecast.add(highestTempHourly, hour, 3);
+            Text windSpeed = new Text();
+            windSpeed.setStyle("-fx-font: 20 arial;");
+            hourlyForecast.add(windSpeed, hour, 2);
             Image descriptionHourly = new Image(getClass().getResourceAsStream("/icons/day-clear.png"));
             ImageView descriptionHourView = new ImageView(descriptionHourly);
             descriptionHourView.setFitHeight(30);
             descriptionHourView.setFitWidth(30);
-            hourlyForecast.add(descriptionHourView, hour, 4);
+            hourlyForecast.add(descriptionHourView, hour, 3);
             Text humidity = new Text();
             humidity.setStyle("-fx-font: 20 arial;");
-            hourlyForecast.add(humidity, hour, 5);
+            hourlyForecast.add(humidity, hour, 4);
             textList[hour][0] = hourText;
             textList[hour][1] = degree;
-            textList[hour][2] = lowestTempHourly;
-            textList[hour][3] = highestTempHourly;
+            textList[hour][2] = windSpeed;
             imageViews[hour] = descriptionHourView;
-            textList[hour][4] = humidity;
+            textList[hour][3] = humidity;
         }
         
         ScrollPane scrollPane = new ScrollPane();
@@ -239,11 +235,10 @@ public class WeatherApp extends Application {
                 // Change hourly forecast
                 String[][] hourlyForecastData = displayHandler.getHourlyForecastMetric(currentCityData);
                 for (int hour = 0; hour < 24; hour++) {
-                    textList[hour][0].setText(hourlyForecastData[hour][0].substring(11, 16));
+                    textList[hour][0].setText(hourlyForecastData[hour][0] + ":00");
                     textList[hour][1].setText(hourlyForecastData[hour][1]);
                     textList[hour][2].setText(hourlyForecastData[hour][2]);
-                    textList[hour][3].setText(hourlyForecastData[hour][3]);
-                    textList[hour][4].setText(hourlyForecastData[hour][5]);
+                    textList[hour][3].setText(hourlyForecastData[hour][4]);
                 }
 
                 isMetric = true;
@@ -276,12 +271,10 @@ public class WeatherApp extends Application {
                 // Change hourly forecast
                 String[][] hourlyForecastData = displayHandler.getHourlyForecastImperial(currentCityData);
                 for (int hour = 0; hour < 24; hour++) {
-                    textList[hour][0].setText(hourlyForecastData[hour][0].substring(11, 16));
+                    textList[hour][0].setText(hourlyForecastData[hour][0] + ":00");
                     textList[hour][1].setText(hourlyForecastData[hour][1]);
                     textList[hour][2].setText(hourlyForecastData[hour][2]);
-                    textList[hour][3].setText(hourlyForecastData[hour][3]);
-                    textList[hour][4].setText(hourlyForecastData[hour][4]);
-                    textList[hour][5].setText(hourlyForecastData[hour][5]);
+                    textList[hour][3].setText(hourlyForecastData[hour][4]);
                 }
 
                 isMetric = false;
@@ -357,12 +350,11 @@ public class WeatherApp extends Application {
                     // Change hourly forecast
                     String[][] hourlyForecastData = displayHandler.getHourlyForecastMetric(cityInfo);
                     for (int hour = 0; hour < 24; hour++) {
-                        textList[hour][0].setText(hourlyForecastData[hour][0].substring(11, 16));
+                        textList[hour][0].setText(hourlyForecastData[hour][0] + ":00");
                         textList[hour][1].setText(hourlyForecastData[hour][1]);
                         textList[hour][2].setText(hourlyForecastData[hour][2]);
-                        textList[hour][3].setText(hourlyForecastData[hour][3]);
-                        imageViews[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][4]))));
-                        textList[hour][4].setText(hourlyForecastData[hour][5]);
+                        imageViews[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
+                        textList[hour][3].setText(hourlyForecastData[hour][4]);
                     }
                 } 
             } else {
@@ -421,12 +413,11 @@ public class WeatherApp extends Application {
                     // Change hourly forecast
                     String[][] hourlyForecastData = displayHandler.getHourlyForecastImperial(cityInfo);
                     for (int hour = 0; hour < 24; hour++) {
-                        textList[hour][0].setText(hourlyForecastData[hour][0].substring(11, 16));
+                        textList[hour][0].setText(hourlyForecastData[hour][0] + ":00");
                         textList[hour][1].setText(hourlyForecastData[hour][1]);
                         textList[hour][2].setText(hourlyForecastData[hour][2]);
-                        textList[hour][3].setText(hourlyForecastData[hour][3]);
-                        imageViews[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][4]))));
-                        textList[hour][4].setText(hourlyForecastData[hour][5]);
+                        imageViews[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
+                        textList[hour][3].setText(hourlyForecastData[hour][4]);
                     }
                 } 
 
