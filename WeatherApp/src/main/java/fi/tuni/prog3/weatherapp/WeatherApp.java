@@ -51,10 +51,14 @@ public class WeatherApp extends Application {
     private TextField searchBar;
     private Button searchButton;
     private ToggleButton saveFavButton;
+    private List<String> favourites = new ArrayList<String>();
+    private ComboBox<String> favouritesBox = favouritesDropBox();
+    private String selectedFavourite;
 
     private final ImageHandler imageHandler = new ImageHandler();
     private boolean isMetric = true;
     private String[] currentCityData = {};
+    private String[] cityInfo = {};
 
 
     @Override
@@ -62,7 +66,7 @@ public class WeatherApp extends Application {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(10, 10, 10, 10));
         
-        // Few Days Forecast
+        // Daily Forecast
         VBox fewDaysForecast = new VBox(25);
         fewDaysForecast.setPrefSize(290, 275);
         fewDaysForecast.setPadding(new Insets(10, 10 , 10, 10));
@@ -113,7 +117,7 @@ public class WeatherApp extends Application {
         day4.getChildren().addAll(date4, r4, temp4, logo4);
         
         fewDaysForecast.getChildren().addAll(day1, day2, day3, day4);
-        
+         
         // Hourly Forecast
         GridPane hourlyForecast = new GridPane();
         hourlyForecast.setHgap(10);
@@ -202,13 +206,12 @@ public class WeatherApp extends Application {
         data.getChildren().addAll(feelsLike, humid, wind);
         additionalDataBox.setLeft(data);
         VBox buttons = new VBox(15);
+        
         // Load previously saved favourites
         readToFile();
         updateFavBox();
-        
         //Button setFav = new Button("Favorite");
         saveFavButton = new ToggleButton("Save as favourite");
-
         // Update the button state based on the favorite status
         updatesaveFavButtonState();
 
@@ -216,12 +219,13 @@ public class WeatherApp extends Application {
         saveFavButton.setOnAction(event -> {
             if (saveFavButton.isSelected()) {
                 // If the button is selected, add the city to favorites
-                favourites.add(cityName);
+                favourites.add(capitalizedPhrase(cityName));
             } else {
                 // If the button is not selected, remove the city from favorites
-                favourites.remove(cityName);
+                favourites.remove(capitalizedPhrase(cityName));      
             } 
             updateFavBox();
+            favouritesBox.setValue(null);
             updatesaveFavButtonState(); // Update the button state after toggling favorite status
         });
  
@@ -315,6 +319,7 @@ public class WeatherApp extends Application {
         searchBar.setPrefWidth(475);
         searchBar.setPromptText("City, (State,) Country Code");
         
+        
         searchButton = new Button("Search");
         searchButton.setOnAction((ActionEvent event) -> {
             if (isMetric) {
@@ -333,8 +338,11 @@ public class WeatherApp extends Application {
                 } else {
                     // Change the city name
                     cityName = searchBar.getText().split(",", 3)[0];
+                    updateFavBox();
                     updatesaveFavButtonState();
-                    String[] cityInfo = displayHandler.getCityInformation(searchBar);
+                    
+                    
+                    cityInfo = displayHandler.getCityInformation(searchBar);
                     currentCityData = cityInfo;
                     
                     if (cityInfo[2] == "") {
@@ -476,9 +484,6 @@ public class WeatherApp extends Application {
     
     // Save favourite locations
     
-    private List<String> favourites = new ArrayList<String>();
-    private ComboBox<String> favouritesBox = favouritesDropBox();
-    
     private void writeToFile() {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("favourites.txt"))) {
@@ -491,14 +496,14 @@ public class WeatherApp extends Application {
             e.printStackTrace();
         }
         
-        /* try (BufferedWriter writer = new BufferedWriter(new FileWriter("current_location.txt"))) {
-            writer.write(city);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("current_location.txt"))) {
+            writer.write(cityName);
             writer.close();
         }
 
         catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
     
     private void readToFile() {
@@ -514,13 +519,12 @@ public class WeatherApp extends Application {
             e.printStackTrace();
         }
         
-        /*try (BufferedReader reader = new BufferedReader(new FileReader("last_location.txt"))) {
-            city = reader.readLine();
-            lookUpLocation(city, "", country);
+        try (BufferedReader reader = new BufferedReader(new FileReader("current_location.txt"))) {
+            cityName = reader.readLine();
 
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
      
     private ComboBox<String> favouritesDropBox() {
@@ -529,16 +533,16 @@ public class WeatherApp extends Application {
             if (favouritesBox == null) {
                 favouritesBox = new ComboBox<>();
             }
-            if (favouritesBox.getItems().isEmpty() || favourites.isEmpty()) {
             favouritesBox.setPromptText("Favourites");
-            }
             
             // Add selected favourite to search box
             favouritesBox.setOnAction(event -> {
-                String selectedFavourite = favouritesBox.getValue();
+                selectedFavourite = favouritesBox.getValue();
                 if (selectedFavourite != null) {
                     searchBar.setText(selectedFavourite);
                     searchButton.fire();
+                } if (selectedFavourite == null) {
+                    favouritesBox.setPromptText("Favourites");
                 }
             });
             // Check if favourites is null or empty before setting items
@@ -558,8 +562,9 @@ public class WeatherApp extends Application {
         favouritesDropBox().getItems().clear();
         favouritesDropBox().getItems().setAll(favourites);
     }
+    
     private void updatesaveFavButtonState() {
-        if (favourites.contains(cityName)) {
+        if (favourites.contains(capitalizedPhrase(cityName))) {
             saveFavButton.setSelected(true);
             saveFavButton.setText("Unsave");
         } else {
@@ -567,6 +572,38 @@ public class WeatherApp extends Application {
             saveFavButton.setText("Save as favourite");
         }
     }
+  
+    private String capitalizedPhrase(String phrase) {
+        // Check if the phrase is null or empty
+        if (phrase == null || phrase.isEmpty()) {
+            return "";
+        }
+
+        // Check if the phrase contains only one word
+        if (!phrase.contains(" ")) {
+            // If the phrase contains only one word, capitalize its first letter and return
+            return phrase.substring(0, 1).toUpperCase() + phrase.substring(1);
+        }
+
+        // Splitting up words using split function
+        String[] words = phrase.split(" ");
+
+        for (int i = 0; i < words.length; i++) {
+            // Taking letter individually from each word
+            String firstLetter = words[i].substring(0, 1);
+            String restOfWord = words[i].substring(1);
+
+            // Making first letter uppercase using toUpperCase function
+            firstLetter = firstLetter.toUpperCase();
+            words[i] = firstLetter + restOfWord;
+        }
+
+        // Joining the words together to make a sentence
+        String capitalizedPhrase = String.join(" ", words);
+        return capitalizedPhrase;
+    }
+
+
 
 }
     
