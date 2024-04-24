@@ -20,7 +20,7 @@ import java.util.Map;
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
-    private final iMyAPI weatherAPI = new WeatherData("imperial"); 
+    private final iMyAPI weatherAPI = new WeatherData("metric"); 
     // By default the unit of the program is metric
 
     @Override
@@ -56,7 +56,7 @@ public class WeatherApp extends Application {
      * Testing lookUpLocation and getCurrentWeather
      */
     private void display_current_Weather() {
-        String[] weather_location = weatherAPI.lookUpLocation("Portland","","US"); 
+        String[] weather_location = weatherAPI.lookUpLocation("Sa Pa","",""); 
              
         if(weather_location != null){
         double latitude = Double.parseDouble(weather_location[0]);
@@ -77,7 +77,7 @@ public class WeatherApp extends Application {
      */
     private void display_forecast(){
         // Main thing is to ask user to specify the location
-        String[] weather_location = weatherAPI.lookUpLocation("Ha Noi","","VN"); 
+        String[] weather_location = weatherAPI.lookUpLocation("Tampere","","FI"); 
       
         double latitude = Double.parseDouble(weather_location[0]);
         double longitude = Double.parseDouble(weather_location[1]);
@@ -87,13 +87,13 @@ public class WeatherApp extends Application {
         Object hourly_forecast_object = weatherAPI.getHourlyForecast(latitude, longitude);
         String[][] hourly_forecast = (String [][]) hourly_forecast_object;
         
-        /*
+        
         for (String[] day : forecast_data) { // priting forecast data
             for (String info : day) {
                 System.out.print(info + " ");
             }
             System.out.println();
-        }*/
+        }
         
                 // Loop through each row
         for (int i = 0; i < hourly_forecast.length; i++) { // printing hourly forecast data
