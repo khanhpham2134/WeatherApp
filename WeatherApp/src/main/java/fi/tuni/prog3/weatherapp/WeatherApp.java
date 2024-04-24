@@ -143,7 +143,7 @@ public class WeatherApp extends Application {
             hourlyForecast.add(descriptionHourView, hour, 4);
             Text humidity = new Text();
             humidity.setStyle("-fx-font: 20 arial;");
-            hourlyForecast.add(humidity, hour, 5); 
+            hourlyForecast.add(humidity, hour, 5);
             textList[hour][0] = hourText;
             textList[hour][1] = degree;
             textList[hour][2] = lowestTempHourly;
@@ -153,7 +153,7 @@ public class WeatherApp extends Application {
         }
         
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setPrefSize(650, 200);
+        scrollPane.setPrefSize(650, 220);
         scrollPane.setContent(hourlyForecast);
         
         // Current Weather
