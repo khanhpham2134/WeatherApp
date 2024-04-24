@@ -1,8 +1,6 @@
 package fi.tuni.prog3.weatherapp;
 
 import javafx.scene.control.TextField;
-import java.util.Map;
-
 /**
  *
  * @author crhiho
