@@ -124,7 +124,7 @@ public class WeatherDataTest {
         assertNotNull(result);
 
         // Check if the result contains necessary weather information
-        assertTrue(result.length >= 11); // At least 11 elements expected
+        assertTrue(result.length == 11); 
     }
 
     /**
