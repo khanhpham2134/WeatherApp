@@ -25,11 +25,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.TimeZone;
 import java.time.ZoneOffset;
+
 import java.util.NoSuchElementException;
 
 public class WeatherData implements iMyAPI {
@@ -82,8 +81,8 @@ public class WeatherData implements iMyAPI {
      */
     @Override
     public String[][] getHourlyForecast(double lat, double lon) {
-        String[][] hourlyForecast = new String[24][6]; // 24 is 24 timestamps
-        // 6 is for time, temp, min, max, sky, humidity 
+        String[][] hourlyForecast = new String[24][5]; // 24 is 24 timestamps
+        // 5 is for time, temperature, wind speed, sky, humidity 
         
         try {
             String urlString = "https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY+"&cnt=24"+ "&units=" + UNIT;
@@ -101,39 +100,36 @@ public class WeatherData implements iMyAPI {
             
             JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
             JsonArray hourlyData = jsonResponse.getAsJsonArray("list");
-            
+           
+            // Retrieve timezone from JSON response
+            int timezoneOffset = jsonResponse.get("city").getAsJsonObject().get("timezone").getAsInt();
+            ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(timezoneOffset);
+            ZoneId zoneId = ZoneId.ofOffset("UTC", zoneOffset);
+
             int index = 0; 
             for (JsonElement element : hourlyData) { 
                 JsonObject dataPoint = element.getAsJsonObject();                
                 long timestampSeconds = dataPoint.get("dt").getAsLong(); // Timestamp in seconds
-                // Convert timestamp to LocalDateTime in the time zone of the location
-                LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestampSeconds), ZoneId.of(getTimeZone(lat, lon)));
-                String timestamp = localDateTime.toString(); // KO HIEU ???
+                // Convert timestamp to LocalDateTime in the time zone of the location               
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(java.time.Instant.ofEpochSecond(timestampSeconds), zoneId);
+                String localDateTimeString = localDateTime.format(java.time.format.DateTimeFormatter.ofPattern("HH"));
                 
                 // String timestamp = dataPoint.get("dt_txt").getAsString();
                 double temp = dataPoint.getAsJsonObject("main").get("temp").getAsDouble();
                 long temp_rounded = Math.round(temp);
                 
-                double temp_min = dataPoint.getAsJsonObject("main").get("temp_min").getAsDouble();
-                long temp_min_rounded = Math.round(temp_min);
-                
-                double temp_max = dataPoint.getAsJsonObject("main").get("temp_max").getAsDouble();
-                long temp_max_rounded = Math.round(temp_max);
-                
                 String unitSuffix = "metric".equals(UNIT) ? "°C" : "°F";
                 String temperature = String.valueOf(temp_rounded) + unitSuffix;
-                String tempMin = String.valueOf(temp_min_rounded) + unitSuffix;
-                String tempMax = String.valueOf(temp_max_rounded) + unitSuffix;
                 String weatherMain = dataPoint.getAsJsonArray("weather").get(0).getAsJsonObject().get("main").getAsString();
                 String humidity = dataPoint.getAsJsonObject("main").get("humidity").getAsString();
-
+                double windSpeed = dataPoint.getAsJsonObject("wind").get("speed").getAsDouble();
+                String windSpeedFormatted = String.valueOf(windSpeed) + (UNIT.equals("metric") ? "m/s" : "mph");
                 // Store data in array
-                hourlyForecast[index][0] = timestamp;
+                hourlyForecast[index][0] = localDateTimeString;
                 hourlyForecast[index][1] = temperature;
-                hourlyForecast[index][2] = tempMin;
-                hourlyForecast[index][3] = tempMax;
-                hourlyForecast[index][4] = weatherMain;
-                hourlyForecast[index][5] = humidity + "%";
+                hourlyForecast[index][2] = windSpeedFormatted;
+                hourlyForecast[index][3] = weatherMain;
+                hourlyForecast[index][4] = humidity + "%";
 
                 index++;                
                 
@@ -227,7 +223,7 @@ public class WeatherData implements iMyAPI {
 
      * @return       An array of string containing the current temperature, 
      * feels like, min and max temperature (in metric, Celsius), humidity, description,
-     * sky, and wind speed (in metric, m/s) IN THIS ORDER.
+     * sky, and wind speed (in metric, m/s), and visibility IN THIS ORDER.
      * 
      * Returns an array of string with all elements are "Error" if error occurs during 
      * the retrieval process.
@@ -267,12 +263,14 @@ public class WeatherData implements iMyAPI {
             
             // Parse JSON response
             JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
-
             // Extract relevant weather information
-            JsonObject main = jsonResponse.getAsJsonObject("main");
+            double visibility = jsonResponse.get("visibility").getAsDouble();
+            visibility = visibility / 1000;
+            String Visibility = String.valueOf(visibility) + "km";
             
             JsonObject wind = jsonResponse.getAsJsonObject("wind");
             String wind_speed = wind.get("speed").getAsString();
+            JsonObject main = jsonResponse.getAsJsonObject("main");          
             double temperature_double = main.get("temp").getAsDouble();
             double feels_like_double = main.get("feels_like").getAsDouble();
             double min_temp_double = main.get("temp_min").getAsDouble();
@@ -300,7 +298,7 @@ public class WeatherData implements iMyAPI {
               feels_like += "°F";
               min_temp += "°F";
               max_temp += "°F";  
-              wind_speed +=" mph";
+              wind_speed +="mph";
             }
             
             String humidity = main.get("humidity").getAsString();
@@ -310,7 +308,7 @@ public class WeatherData implements iMyAPI {
             String main_sky = weather.get("main").getAsString();
             
             String[] weatherInfo = {temperature, feels_like, min_temp, max_temp,
-                                humidity, description, main_sky, wind_speed}; 
+                                humidity, description, main_sky, wind_speed,Visibility}; 
 
             return weatherInfo;            
         } catch (IOException e) {
@@ -423,47 +421,7 @@ public class WeatherData implements iMyAPI {
         }
     }
 
-    /**
-     * Get the time zone ID for the given latitude and longitude coordinates.
-     *
-     * @param lat Latitude of the location.
-     * @param lon Longitude of the location.
-     * @return Time zone ID.
-     */
-        /**
-     * Get the time zone ID for the given latitude and longitude coordinates.
-     *
-     * @param lat Latitude of the location.
-     * @param lon Longitude of the location.
-     * @return Time zone ID.
-     */
-    private String getTimeZone(double lat, double lon) {
-        return TimeZone.getTimeZone(getTimeZoneId(lat, lon)).toZoneId().getId();
-    }
 
-    /**
-     * Get the time zone ID for the given latitude and longitude coordinates.
-     *
-     * @param lat Latitude of the location.
-     * @param lon Longitude of the location.
-     * @return Time zone ID.
-     */
-    private String getTimeZoneId(double lat, double lon) {
-        return TimeZone.getTimeZone(getTimeZoneIdString(lat, lon)).getID();
-    }
-
-    /**
-     * Get the time zone ID string for the given latitude and longitude coordinates.
-     *
-     * @param lat Latitude of the location.
-     * @param lon Longitude of the location.
-     * @return Time zone ID string.
-     */
-    private String getTimeZoneIdString(double lat, double lon) {
-        int offsetMillis = TimeZone.getTimeZone("GMT").getOffset((long) (lat * 3600000) + (long) (lon * 60000));
-        return ZoneId.ofOffset("", ZoneOffset.ofTotalSeconds(offsetMillis / 1000)).getId();
-    }
-    
     }
     
 
