@@ -149,7 +149,7 @@ public class WeatherApp extends Application {
         }
         
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setPrefSize(650, 220);
+        scrollPane.setPrefSize(650, 200);
         scrollPane.setContent(hourlyForecast);
         
         // Current Weather
