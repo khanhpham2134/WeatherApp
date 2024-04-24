@@ -56,7 +56,7 @@ public class WeatherApp extends Application {
      * Testing lookUpLocation and getCurrentWeather
      */
     private void display_current_Weather() {
-        String[] weather_location = weatherAPI.lookUpLocation("Sa Pa","",""); 
+        String[] weather_location = weatherAPI.lookUpLocation("New York","",""); 
              
         if(weather_location != null){
         double latitude = Double.parseDouble(weather_location[0]);
