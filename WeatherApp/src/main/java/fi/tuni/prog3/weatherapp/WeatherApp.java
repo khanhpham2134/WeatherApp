@@ -393,10 +393,6 @@ public class WeatherApp extends Application {
                     // Change the city name
                     cityName = inputParams[0];
 
-                    updatesaveFavButtonState();
-                    updateFavBox();
-                    updateHisBox();
-
                     String[] cityInfo = displayHandler.getCityInformation(inputParams);
                     currentCityData = cityInfo;
                     if (cityInfo[2] == "") {
@@ -408,6 +404,10 @@ public class WeatherApp extends Application {
                     }
                     if (!history.contains(cityLoc)) {
                         history.add(cityLoc);}
+                    
+                    updatesaveFavButtonState();
+                    updateFavBox();
+                    updateHisBox();
                     
                     // Change daily forecast
                     String[][] dailyForecast = displayHandler.getDailyForecastMetric(cityInfo);
@@ -468,10 +468,18 @@ public class WeatherApp extends Application {
                     String[] cityInfo = displayHandler.getCityInformation(inputParams);
                     currentCityData = cityInfo;
                     if (cityInfo[2] == "") {
-                        city.setText(cityName.toUpperCase() + ", " + cityInfo[3]);
+                        cityLoc = cityName.toUpperCase() + ", " + cityInfo[3];
+                        city.setText(cityLoc);
                     } else {
-                        city.setText(cityName.toUpperCase() + ", " + cityInfo[2] + ", " + cityInfo[3]);
+                        cityLoc = cityName.toUpperCase() + ", " + cityInfo[2] + ", " + cityInfo[3];
+                        city.setText(cityLoc);
                     }
+                    if (!history.contains(cityLoc)) {
+                        history.add(cityLoc);}
+                    
+                    updatesaveFavButtonState();
+                    updateFavBox();
+                    updateHisBox();
                     
                     // Change daily forecast
                     String[][] dailyForecast = displayHandler.getDailyForecastImperial(cityInfo);
@@ -797,59 +805,5 @@ public class WeatherApp extends Application {
             saveFavButton.setText("Save as favourite");
         }
     }
-  
-    private String capitalizedPhrase(String phrase) {
-        // Check if the phrase is null or empty
-        if (phrase == null || phrase.isEmpty()) {
-            return "";
-        }
-
-        // Trim extra spaces and split the phrase by comma
-        String[] parts = phrase.trim().split(",");
-
-        StringBuilder result = new StringBuilder();
-
-        // Capitalize and append each part
-        for (int i = 0; i < parts.length; i++) {
-            // Trim extra spaces
-            String part = parts[i].trim();
-
-            // Capitalize the first letter of the part
-            String capitalizedPart = part.substring(0, 1).toUpperCase() + part.substring(1);
-
-            // Capitalize the country code if it's present (index 1)
-            if (i == 1 && parts.length > 1) {
-                capitalizedPart = capitalizedPart.toUpperCase();
-            }
-
-            result.append(capitalizedPart);
-
-            // Append comma if it's not the last part
-            if (i < parts.length - 1) {
-                result.append(", ");
-            }
-        }
-
-        return result.toString();
-    }
     
-
-
-
 }
-    
-
-
-/*
-    // Empty seacrch history button
-    Button clearFavButton = new Button("Clear favourites");
-
-    clearFavs.setOnAction(event -> {
-        favourites.clear();
-        updateFavBox();
-    });
-
-}*/
-
-
-
