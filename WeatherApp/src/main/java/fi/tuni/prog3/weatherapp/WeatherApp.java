@@ -414,28 +414,33 @@ public class WeatherApp extends Application {
                     date1.setText(dailyForecast[0][0]);
                     minTemp1.setText(dailyForecast[0][2]);
                     maxTemp1.setText(dailyForecast[0][3]);
-                    descriptionView1.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[0][4]))));
+                    descriptionView1.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[0][4]))));
                     date2.setText(dailyForecast[1][0]);
                     minTemp2.setText(dailyForecast[1][2]);
                     maxTemp2.setText(dailyForecast[1][3]);
-                    descriptionView2.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[1][4]))));
+                    descriptionView2.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[1][4]))));
                     date3.setText(dailyForecast[2][0]);
                     minTemp3.setText(dailyForecast[2][2]);
                     maxTemp3.setText(dailyForecast[2][3]);
-                    descriptionView3.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[2][4]))));
+                    descriptionView3.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[2][4]))));
                     date4.setText(dailyForecast[3][0]);
                     minTemp4.setText(dailyForecast[3][2]);
                     maxTemp4.setText(dailyForecast[3][3]);
-                    descriptionView4.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[3][4]))));
+                    descriptionView4.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[3][4]))));
 
                     // Change current weather section
                     String[] currentWeatherData = displayHandler.getCurrentWeatherDataMetric(cityInfo);
+                    String daySunrise = currentWeatherData[9];
+                    String daySunset = currentWeatherData[10];
+                    System.out.println(daySunrise);
+                    System.out.println(daySunset);
+                    System.out.println(currentWeatherData[8]);
                     temp.setText(currentWeatherData[0]);
                     feelsLike.setText("FEELS LIKE: " + currentWeatherData[1]);
                     lowestTemp.setText("L: " + dailyForecast[0][2]);
                     highestTemp.setText("H: " + dailyForecast[0][3]);
                     humid.setText("HUMIDITY: " + currentWeatherData[4]);
-                    descriptionView.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(currentWeatherData[6]))));
+                    descriptionView.setImage(new Image(getClass().getResourceAsStream(imageHandler.currentImageHandler(currentWeatherData))));
                     wind.setText("WIND SPEED: " + currentWeatherData[7]);
                     
                     // Change hourly forecast
@@ -444,7 +449,7 @@ public class WeatherApp extends Application {
                         hourlyForecastTexts[hour][0].setText(hourlyForecastData[hour][0] + ":00");
                         hourlyForecastTexts[hour][1].setText(hourlyForecastData[hour][1]);
                         hourlyForecastTexts[hour][2].setText(hourlyForecastData[hour][2]);
-                        hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
+                        hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.hourlyImageHandler(hourlyForecastData[hour], daySunrise, daySunset))));
                         hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
                     }
                 } 
@@ -478,28 +483,30 @@ public class WeatherApp extends Application {
                     date1.setText(dailyForecast[0][0]);
                     minTemp1.setText(dailyForecast[0][2]);
                     maxTemp1.setText(dailyForecast[0][3]);
-                    descriptionView1.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[0][4]))));
+                    descriptionView1.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[0][4]))));
                     date2.setText(dailyForecast[1][0]);
                     minTemp2.setText(dailyForecast[1][2]);
                     maxTemp2.setText(dailyForecast[1][3]);
-                    descriptionView2.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[1][4]))));
+                    descriptionView2.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[1][4]))));
                     date3.setText(dailyForecast[2][0]);
                     minTemp3.setText(dailyForecast[2][2]);
                     maxTemp3.setText(dailyForecast[2][3]);
-                    descriptionView3.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[2][4]))));
+                    descriptionView3.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[2][4]))));
                     date4.setText(dailyForecast[3][0]);
                     minTemp4.setText(dailyForecast[3][2]);
                     maxTemp4.setText(dailyForecast[3][3]);
-                    descriptionView4.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[3][4]))));
+                    descriptionView4.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[3][4]))));
 
                     // Change current weather section
                     String[] currentWeatherData = displayHandler.getCurrentWeatherDataImperial(cityInfo);
+                    String daySunrise = currentWeatherData[9];
+                    String daySunset = currentWeatherData[10];
                     temp.setText(currentWeatherData[0]);
                     feelsLike.setText("FEELS LIKE: " + currentWeatherData[1]);
                     lowestTemp.setText("L: " + dailyForecast[0][2]);
                     highestTemp.setText("H: " + dailyForecast[0][3]);
                     humid.setText("HUMIDITY: " + currentWeatherData[4]);
-                    descriptionView.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(currentWeatherData[6]))));
+                    descriptionView.setImage(new Image(getClass().getResourceAsStream(imageHandler.currentImageHandler(currentWeatherData))));
                     wind.setText("WIND SPEED: " + currentWeatherData[7]);
                     
                     // Change hourly forecast
@@ -508,7 +515,7 @@ public class WeatherApp extends Application {
                         hourlyForecastTexts[hour][0].setText(hourlyForecastData[hour][0] + ":00");
                         hourlyForecastTexts[hour][1].setText(hourlyForecastData[hour][1]);
                         hourlyForecastTexts[hour][2].setText(hourlyForecastData[hour][2]);
-                        hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
+                        hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.hourlyImageHandler(hourlyForecastData[hour], daySunrise, daySunset))));
                         hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
                     }
                 } 
@@ -632,7 +639,9 @@ public class WeatherApp extends Application {
                 currentWeatherData = displayHandler.getCurrentWeatherDataMetric(cityInfo);
                 hourlyForecastData = displayHandler.getHourlyForecastMetric(cityInfo);
             }
-            
+            String daySunrise = currentWeatherData[9];
+            String daySunset = currentWeatherData[10];
+
             Text date1 = dailyForecastTexts[0][0];
             Text minTemp1 = dailyForecastTexts[0][1];
             Text maxTemp1 = dailyForecastTexts[0][2];
@@ -657,19 +666,19 @@ public class WeatherApp extends Application {
             date1.setText(dailyForecast[0][0]);
             minTemp1.setText(dailyForecast[0][2]);
             maxTemp1.setText(dailyForecast[0][3]);
-            descriptionView1.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[0][4]))));
+            descriptionView1.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[0][4]))));
             date2.setText(dailyForecast[1][0]);
             minTemp2.setText(dailyForecast[1][2]);
             maxTemp2.setText(dailyForecast[1][3]);
-            descriptionView2.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[1][4]))));
+            descriptionView2.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[1][4]))));
             date3.setText(dailyForecast[2][0]);
             minTemp3.setText(dailyForecast[2][2]);
             maxTemp3.setText(dailyForecast[2][3]);
-            descriptionView3.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[2][4]))));
+            descriptionView3.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[2][4]))));
             date4.setText(dailyForecast[3][0]);
             minTemp4.setText(dailyForecast[3][2]);
             maxTemp4.setText(dailyForecast[3][3]);
-            descriptionView4.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[3][4]))));
+            descriptionView4.setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[3][4]))));
 
             // Change current weather section
             Text lowestTemp = currentWeatherTexts[0];
@@ -686,7 +695,7 @@ public class WeatherApp extends Application {
             lowestTemp.setText("L: " + dailyForecast[0][2]);
             highestTemp.setText("H: " + dailyForecast[0][3]);
             humid.setText("HUMIDITY: " + currentWeatherData[4]);
-            descriptionView.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(currentWeatherData[6]))));
+            descriptionView.setImage(new Image(getClass().getResourceAsStream(imageHandler.currentImageHandler(currentWeatherData))));
             wind.setText("WIND SPEED: " + currentWeatherData[7]);
             
             // Change hourly forecast
@@ -701,7 +710,7 @@ public class WeatherApp extends Application {
                 hourlyForecastTexts[hour][0].setText(hourlyForecastData[hour][0] + ":00");
                 hourlyForecastTexts[hour][1].setText(hourlyForecastData[hour][1]);
                 hourlyForecastTexts[hour][2].setText(hourlyForecastData[hour][2]);
-                hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
+                hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.hourlyImageHandler(hourlyForecastData[hour], daySunrise, daySunset))));
                 hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
             }
 
