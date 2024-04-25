@@ -7,11 +7,12 @@ package fi.tuni.prog3.weatherapp;
 /**
  *
  * @author bcmivu
- * AI tool (ChatGPT 3.5) was used in this class file to search for libraries
- * that serve for suitable purposes of author. It is also used to search for 
- * different methods of multiple classes, like String and double, and their 
- * syntax, which is depended on author's need. I think it helped me save a lot 
- * of time.
+ * A class that implement the iMyAPI interface which extracts data from the 
+ * OpenWeatherMap API. AI tool (ChatGPT 3.5) was used in this class file to 
+ * search for libraries that serve for the demands of the class. It is 
+ * also used to search for different methods of multiple classes, like String 
+ * and double, and their syntax, which is depended on author's need. I think it 
+ * helped me save a lot of time.
  */
 
 import java.io.BufferedReader;
@@ -34,11 +35,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.NoSuchElementException;
 
-/*
-* A class that implement the iMyAPI interface which extracts data 
-* from the OpenWeatherMap API.
-*/
-public class WeatherData implements iMyAPI {
+public class WeatherData implements iAPI {
 
     private final String API_KEY;
     private String UNIT;
@@ -56,8 +53,6 @@ public class WeatherData implements iMyAPI {
     public boolean get_error_flag(){
         return ERROR_LOCATION;
     }
-
-    // implement iMyAPI
 
     /**
      * Retrieves hourly weather forecast data for the specified latitude and longitude coordinates.
@@ -137,8 +132,6 @@ public class WeatherData implements iMyAPI {
         return hourlyForecast;
     }
 
-    
-    // implement iAPI
     /**
      * Return the coordinate, the state (if it is a US location), and the country code 
      * of the wanted location. 

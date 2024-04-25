@@ -29,4 +29,13 @@ public interface iAPI {
      * @return 2D String array.
      */
     public String[][] getForecast(double lat, double lon);
+    
+    /**
+     * Returns the hourly forecast for a location
+     * 
+     * @param lat: latitude of the location
+     * @param lon: longitude of the location
+     * @return Object hourly forecast data
+     */
+    public String[][] getHourlyForecast(double lat, double lon);
 }

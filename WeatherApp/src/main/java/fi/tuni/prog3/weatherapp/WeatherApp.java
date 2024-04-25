@@ -20,7 +20,7 @@ import java.util.Map;
  * JavaFX Weather Application.
  */
 public class WeatherApp extends Application {
-    private final iMyAPI weatherAPI = new WeatherData("metric"); 
+    private final iAPI weatherAPI = new WeatherData("metric"); 
     // By default the unit of the program is metric
 
     @Override
@@ -83,9 +83,9 @@ public class WeatherApp extends Application {
         double longitude = Double.parseDouble(weather_location[1]);
         
         // Testing output of the two functions
-        String forecast_data[][] = weatherAPI.getForecast(latitude,longitude );
-        Object hourly_forecast_object = weatherAPI.getHourlyForecast(latitude, longitude);
-        String[][] hourly_forecast = (String [][]) hourly_forecast_object;
+        String[][] forecast_data = weatherAPI.getForecast(latitude,longitude );
+        String[][] hourly_forecast = weatherAPI.getHourlyForecast(latitude, longitude);
+        
         
         
         for (String[] day : forecast_data) { // priting forecast data
