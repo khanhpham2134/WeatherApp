@@ -21,6 +21,19 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+
+import java.util.Map;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.application.Platform;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+
 
 
 /**
@@ -28,10 +41,26 @@ import javafx.stage.Stage;
  */
 public class WeatherApp extends Application { 
     // By default the unit of the program is metric
-    private final DisplayHandler displayHandler = new DisplayHandler();
-    private final ImageHandler imageHandler = new ImageHandler();
+    private String cityName;
+    private TextField searchBar;
+    private Button searchButton;
+    private ToggleButton saveFavButton;
+    private List<String> favourites = new ArrayList<String>();
+    private ComboBox<String> favouritesBox = favouritesDropBox();
+    private List<String> history = new ArrayList<String>();
+    private ComboBox<String> historyBox = historyDropBox();
+    private String selectedFavourite;
+
     private boolean isMetric = true;
     private String[] currentCityData = {};
+    private String[] cityInfo = {};
+    private String[] cityData = {};
+    private String cityLoc;
+    private String[] inputParams = {};
+
+    private final DisplayHandler displayHandler = new DisplayHandler();
+    private final ImageHandler imageHandler = new ImageHandler();
+
     // Daily forecast Nodes
     private Text[][] dailyForecastTexts = new Text[4][3];
     private ImageView[] dailyForecastImages = new ImageView[4];
@@ -41,7 +70,10 @@ public class WeatherApp extends Application {
     // Current forecast Nodes
     private Text[] currentWeatherTexts = new Text[7];
     private ImageView currentWeatherView; 
-
+    
+    private String[][] dailyForecast;
+    private String[] currentWeatherData;
+    private String[][] hourlyForecastData;
     @Override
     public void start(Stage stage) {        
         BorderPane root = new BorderPane();
@@ -49,9 +81,9 @@ public class WeatherApp extends Application {
         
         // Few Days Forecast     
         VBox fewDaysForecast = new VBox(25);
-        fewDaysForecast.setPrefSize(290, 275);
         fewDaysForecast.setPadding(new Insets(10, 10 , 10, 10));
         fewDaysForecast.setStyle("-fx-background-color: #b8e2f2;");
+        fewDaysForecast.setPrefWidth(350);
         
         HBox day1 = new HBox(15);
         day1.setAlignment(Pos.CENTER);
@@ -227,8 +259,32 @@ public class WeatherApp extends Application {
         currentWeatherTexts[6] = wind;
         additionalDataBox.setLeft(data);
         VBox buttons = new VBox(15);
-        Button setFav = new Button("Favorite");
-        setFav.setPrefWidth(100);
+
+        // Load previously saved favourites
+        readToFile();
+        updateFavBox();
+        updateHisBox();
+        //Button setFav = new Button("Favorite");
+        saveFavButton = new ToggleButton("Save as favourite");
+        // Update the button state based on the favorite status
+        updatesaveFavButtonState();
+
+        // Add event handler to toggle the favorite status of the city when the button is clicked
+        saveFavButton.setOnAction(event -> {
+            if (saveFavButton.isSelected()) {
+                // If the button is selected, add the city to favorites
+                favourites.add(cityLoc);
+            } else {
+                // If the button is not selected, remove the city from favorites
+                favourites.remove(cityLoc);      
+            } 
+            updateFavBox();
+            favouritesBox.setValue(null);
+            updatesaveFavButtonState(); // Update the button state after toggling favorite status
+        });
+
+        saveFavButton.setPrefWidth(100);
+
         Button changeUnit = new Button("Change Unit");
         changeUnit.setPrefWidth(100);
         changeUnit.setOnAction((ActionEvent event) -> {
@@ -305,19 +361,19 @@ public class WeatherApp extends Application {
                 isMetric = false;
             }
         });
-        buttons.getChildren().addAll(setFav, changeUnit);
+        buttons.getChildren().addAll(saveFavButton, changeUnit);
         additionalDataBox.setRight(buttons);
         currentWeather.setBottom(additionalDataBox);
 
         // Search Bar
-        HBox searchBarSection = new HBox(15);
+        HBox searchBarSection = new HBox(10);
         searchBarSection.setAlignment(Pos.CENTER);
         
-        TextField searchBar = new TextField();
-        searchBar.setPrefWidth(230);
+        searchBar = new TextField();
+        searchBar.setPrefWidth(160);
         searchBar.setPromptText("City, (State,) Country Code");
         
-        Button searchButton = new Button("Search");
+        searchButton = new Button("Search");
         searchButton.setOnAction((ActionEvent event) -> {
             if (isMetric) {
                 boolean inputIsInvalid = displayHandler.ifInputValid(searchBar);
@@ -335,14 +391,23 @@ public class WeatherApp extends Application {
                     searchBar.clear();
                 } else {
                     // Change the city name
-                    String cityName = inputParams[0];
+                    cityName = inputParams[0];
+
+                    updatesaveFavButtonState();
+                    updateFavBox();
+                    updateHisBox();
+
                     String[] cityInfo = displayHandler.getCityInformation(inputParams);
                     currentCityData = cityInfo;
                     if (cityInfo[2] == "") {
-                        city.setText(cityName.toUpperCase() + ", " + cityInfo[3]);
+                        cityLoc = cityName.toUpperCase() + ", " + cityInfo[3];
+                        city.setText(cityLoc);
                     } else {
-                        city.setText(cityName.toUpperCase() + ", " + cityInfo[2] + ", " + cityInfo[3]);
+                        cityLoc = cityName.toUpperCase() + ", " + cityInfo[2] + ", " + cityInfo[3];
+                        city.setText(cityLoc);
                     }
+                    if (!history.contains(cityLoc)) {
+                        history.add(cityLoc);}
                     
                     // Change daily forecast
                     String[][] dailyForecast = displayHandler.getDailyForecastMetric(cityInfo);
@@ -452,11 +517,16 @@ public class WeatherApp extends Application {
         });
         Label favLabel = new Label("Favorite:");
         Label historyLabel = new Label("History:");
-        Button favButton = new Button("Favorite");
-        Button quitButton = new Button("Quit");
-        Button historyButton = new Button("History");
+        var quitButton = getQuitButton();
+        var favBox = favouritesDropBox();
+        var hisBox = historyDropBox();
+;
         Button clearHistoryButton = new Button("Clear History");
-        searchBarSection.getChildren().addAll(searchBar, searchButton, historyLabel, historyButton, clearHistoryButton, favLabel, favButton, quitButton);
+        clearHistoryButton.setOnAction(event -> {
+            history.clear();
+            updateHisBox();
+        });
+        searchBarSection.getChildren().addAll(searchBar, searchButton, historyLabel, hisBox, clearHistoryButton, favLabel, favBox, quitButton);
 
 
         // Adding Sections
@@ -474,5 +544,313 @@ public class WeatherApp extends Application {
     public static void main(String[] args) {
         launch();
     }
-} 
+    private Button getQuitButton() {
+        //Creating a button.
+        Button button = new Button("Quit");
+
+        //Adding an event to the button to terminate the application.
+        button.setOnAction((ActionEvent event) -> {
+            writeToFile();
+            Platform.exit();
+        });
+
+        return button;
+    }
+    
+    // Save favourite locations
+    
+    private void writeToFile() {
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("favourites.txt"))) {
+            for (String location : favourites) {
+                writer.write(location);
+                writer.newLine();
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("current_location.txt"))) {
+            writer.write(cityLoc);
+            writer.newLine(); // Move to the next line
+            writer.write(String.valueOf(isMetric));
+            writer.close();
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("history.txt"))) {
+            for (String location : history) {
+                writer.write(location);
+                writer.newLine();
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void readToFile() {
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("favourites.txt"))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                favourites.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader("current_location.txt"))) {
+            cityLoc = reader.readLine();
+            String secondLine = reader.readLine(); // Read the second line
+            if (secondLine == null) {
+                isMetric = true;
+            }
+            else { // Check if the second line exists
+                isMetric = Boolean.parseBoolean(secondLine);}
+            Text city = currentWeatherTexts[2];
+            inputParams = cityLoc.split(",", 10);
+            String[] cityInfo = displayHandler.getCityInformation(inputParams);
+            currentCityData = cityInfo;
+            if (cityInfo[2] == "") {
+                city.setText(cityLoc);
+            } else {
+                city.setText(cityLoc);
+            }
+            if (!isMetric) {
+                dailyForecast = displayHandler.getDailyForecastImperial(cityInfo);
+                currentWeatherData = displayHandler.getCurrentWeatherDataImperial(cityInfo);
+                hourlyForecastData = displayHandler.getHourlyForecastImperial(cityInfo);}
+            else {
+                dailyForecast = displayHandler.getDailyForecastMetric(cityInfo);
+                currentWeatherData = displayHandler.getCurrentWeatherDataMetric(cityInfo);
+                hourlyForecastData = displayHandler.getHourlyForecastMetric(cityInfo);
+            }
+            
+            Text date1 = dailyForecastTexts[0][0];
+            Text minTemp1 = dailyForecastTexts[0][1];
+            Text maxTemp1 = dailyForecastTexts[0][2];
+            ImageView descriptionView1 = dailyForecastImages[0];
+
+            Text date2 = dailyForecastTexts[1][0];
+            Text minTemp2 = dailyForecastTexts[1][1];
+            Text maxTemp2 = dailyForecastTexts[1][2];
+            ImageView descriptionView2 = dailyForecastImages[1];
+
+            Text date3 = dailyForecastTexts[2][0];
+            Text minTemp3 = dailyForecastTexts[2][1];
+            Text maxTemp3 = dailyForecastTexts[2][2];
+            ImageView descriptionView3 = dailyForecastImages[2];
+
+            Text date4 = dailyForecastTexts[3][0];
+            Text minTemp4 = dailyForecastTexts[3][1];
+            Text maxTemp4 = dailyForecastTexts[3][2];
+            ImageView descriptionView4 = dailyForecastImages[3];
+
+            // Change daily forecast
+            date1.setText(dailyForecast[0][0]);
+            minTemp1.setText(dailyForecast[0][2]);
+            maxTemp1.setText(dailyForecast[0][3]);
+            descriptionView1.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[0][4]))));
+            date2.setText(dailyForecast[1][0]);
+            minTemp2.setText(dailyForecast[1][2]);
+            maxTemp2.setText(dailyForecast[1][3]);
+            descriptionView2.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[1][4]))));
+            date3.setText(dailyForecast[2][0]);
+            minTemp3.setText(dailyForecast[2][2]);
+            maxTemp3.setText(dailyForecast[2][3]);
+            descriptionView3.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[2][4]))));
+            date4.setText(dailyForecast[3][0]);
+            minTemp4.setText(dailyForecast[3][2]);
+            maxTemp4.setText(dailyForecast[3][3]);
+            descriptionView4.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[3][4]))));
+
+            // Change current weather section
+            Text lowestTemp = currentWeatherTexts[0];
+            Text highestTemp = currentWeatherTexts[1];
+            Text temp = currentWeatherTexts[3];
+            Text feelsLike = currentWeatherTexts[4];
+            Text humid = currentWeatherTexts[5];
+            Text wind = currentWeatherTexts[6];
+            ImageView descriptionView = currentWeatherView;
+
+            
+            temp.setText(currentWeatherData[0]);
+            feelsLike.setText("FEELS LIKE: " + currentWeatherData[1]);
+            lowestTemp.setText("L: " + dailyForecast[0][2]);
+            highestTemp.setText("H: " + dailyForecast[0][3]);
+            humid.setText("HUMIDITY: " + currentWeatherData[4]);
+            descriptionView.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(currentWeatherData[6]))));
+            wind.setText("WIND SPEED: " + currentWeatherData[7]);
+            
+            // Change hourly forecast
+            
+            for (int hour = 0; hour < 24; hour++) {
+                Text hourText = hourlyForecastTexts[hour][0];
+                Text degree = hourlyForecastTexts[hour][1];
+                Text windSpeed = hourlyForecastTexts[hour][2];
+                ImageView descriptionHourView = hourlyForecastImages[hour];
+                Text humidity = hourlyForecastTexts[hour][3];
+
+                hourlyForecastTexts[hour][0].setText(hourlyForecastData[hour][0] + ":00");
+                hourlyForecastTexts[hour][1].setText(hourlyForecastData[hour][1]);
+                hourlyForecastTexts[hour][2].setText(hourlyForecastData[hour][2]);
+                hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
+                hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
+            }
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader("history.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                history.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+     
+    private ComboBox<String> favouritesDropBox() {
+        try {
+            // Initialize favouritesBox only if it's not already initialized
+            if (favouritesBox == null) {
+                favouritesBox = new ComboBox<>();
+            }
+            favouritesBox.setPromptText("Favourites");
+            
+            // Add selected favourite to search box
+            favouritesBox.setOnAction(event -> {
+                selectedFavourite = favouritesBox.getValue();
+                if (selectedFavourite != null) {
+                    searchBar.setText(selectedFavourite);
+                    searchButton.fire();
+                } 
+            });
+            // Check if favourites is null or empty before setting items
+            if (favouritesBox.getItems().isEmpty() && favourites != null && !favourites.isEmpty()) {
+                favouritesBox.getItems().setAll(favourites);
+            }
+    
+            return favouritesBox;
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        return favouritesBox;
+    }
+    
+    private ComboBox<String> historyDropBox() {
+        try {
+            // Initialize favouritesBox only if it's not already initialized
+            if (historyBox == null) {
+                historyBox = new ComboBox<>();
+                historyBox.setPrefWidth(130);
+            }
+            historyBox.setPromptText("Choose History");
+            
+            // Add selected favourite to search box
+            historyBox.setOnAction(event -> {
+                String selected = historyBox.getValue();
+                if (selected != null) {
+                    searchBar.setText(selected);
+                    searchButton.fire();
+                }
+            });
+            // Check if favourites is null or empty before setting items
+            if (historyBox.getItems().isEmpty() && history != null && !history.isEmpty()) {
+                historyBox.getItems().setAll(history);
+            }
+    
+            return historyBox;
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        return historyBox;
+    }
+      
+      // This method updates the items in the ComboBox
+    private void updateFavBox() {
+        favouritesDropBox().getItems().clear();
+        favouritesDropBox().getItems().setAll(favourites);
+    }
+    
+    private void updateHisBox() {
+        historyDropBox().getItems().clear();
+        historyDropBox().getItems().setAll(history);
+    }
+    
+    private void updatesaveFavButtonState() {
+        if (favourites.contains(cityLoc)) {
+            saveFavButton.setSelected(true);
+            saveFavButton.setText("Unsave");
+        } else {
+            saveFavButton.setSelected(false);
+            saveFavButton.setText("Save as favourite");
+        }
+    }
+  
+    private String capitalizedPhrase(String phrase) {
+        // Check if the phrase is null or empty
+        if (phrase == null || phrase.isEmpty()) {
+            return "";
+        }
+
+        // Trim extra spaces and split the phrase by comma
+        String[] parts = phrase.trim().split(",");
+
+        StringBuilder result = new StringBuilder();
+
+        // Capitalize and append each part
+        for (int i = 0; i < parts.length; i++) {
+            // Trim extra spaces
+            String part = parts[i].trim();
+
+            // Capitalize the first letter of the part
+            String capitalizedPart = part.substring(0, 1).toUpperCase() + part.substring(1);
+
+            // Capitalize the country code if it's present (index 1)
+            if (i == 1 && parts.length > 1) {
+                capitalizedPart = capitalizedPart.toUpperCase();
+            }
+
+            result.append(capitalizedPart);
+
+            // Append comma if it's not the last part
+            if (i < parts.length - 1) {
+                result.append(", ");
+            }
+        }
+
+        return result.toString();
+    }
+    
+
+
+
+}
+    
+
+
+/*
+    // Empty seacrch history button
+    Button clearFavButton = new Button("Clear favourites");
+
+    clearFavs.setOnAction(event -> {
+        favourites.clear();
+        updateFavBox();
+    });
+
+}*/
+
+
 

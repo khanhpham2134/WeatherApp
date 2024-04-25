@@ -7,8 +7,8 @@ import javafx.scene.control.TextField;
  */
 public class DisplayHandler {
 
-    private final iMyAPI weatherAPIMetric = new WeatherData("metric");
-    private final iMyAPI weatherAPIImperial = new WeatherData("imperial");
+    private final iAPI weatherAPIMetric = new WeatherData("metric");
+    private final iAPI weatherAPIImperial = new WeatherData("imperial");
 
     public boolean ifInputValid(TextField textField) {
         String[] cityData = textField.getText().split(",", 10);
