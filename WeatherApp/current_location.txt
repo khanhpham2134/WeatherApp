@@ -1,2 +1,2 @@
-STOCKHOLM, SE
-false
+BRISTOL, Virginia, US
+true
