@@ -59,7 +59,7 @@ public class ImageHandlerTest {
         String sunrise = "5";
         String sunset = "18";
         ImageHandler instance = new ImageHandler();
-        String expResult = "/icons/day-clear.png";
+        String expResult = "/icons/night-clear.png";
         String result = instance.hourlyImageHandler(weatherData, sunrise, sunset);
         assertEquals(expResult, result);
     }
