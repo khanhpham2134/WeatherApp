@@ -35,7 +35,7 @@ public class DisplayHandlerTest {
         DisplayHandler instance = new DisplayHandler();
         String[] cityData = {"51.51", "-0.13"}; // Coordinates of London
         String[] result = instance.getCurrentWeatherDataMetric(cityData);
-        assertNotNull(result, "Current weather data is null.");
+        assertNotNull(result, "Current weather data in metric is null.");
         assertEquals(6, result.length, "Expected current weather data array length 6.");
     }
 
@@ -44,7 +44,7 @@ public class DisplayHandlerTest {
         DisplayHandler instance = new DisplayHandler();
         String[] cityData = {"51.51", "-0.13"}; // Coordinates of London
         String[][] result = instance.getDailyForecastMetric(cityData);
-        assertNotNull(result, "Daily forecast data is null.");
+        assertNotNull(result, "Daily forecast data in metric is null.");
         assertTrue(result.length > 0, "Daily forecast data array is empty.");
     }
 
@@ -53,10 +53,35 @@ public class DisplayHandlerTest {
         DisplayHandler instance = new DisplayHandler();
         String[] cityData = {"51.51", "-0.13"}; // Coordinates of London
         String[][] result = instance.getHourlyForecastMetric(cityData);
-        assertNotNull(result, "Hourly forecast data is null.");
+        assertNotNull(result, "Hourly forecast data in metric is null.");
         assertTrue(result.length > 0, "Hourly forecast data array is empty.");
     }
 
-    // Add similar tests for Imperial units methods
+    @Test
+    public void testGetCurrentWeatherDataImperial() {
+        DisplayHandler instance = new DisplayHandler();
+        String[] cityData = {"51.51", "-0.13"}; // Coordinates of London
+        String[] result = instance.getCurrentWeatherDataImperial(cityData);
+        assertNotNull(result, "Current weather data in Imperial units is null.");
+        assertEquals(6, result.length, "Expected current weather data array length 6.");
+    }
+
+    @Test
+    public void testGetDailyForecastImperial() {
+        DisplayHandler instance = new DisplayHandler();
+        String[] cityData = {"51.51", "-0.13"}; // Coordinates of London
+        String[][] result = instance.getDailyForecastImperial(cityData);
+        assertNotNull(result, "Daily forecast data in Imperial units is null.");
+        assertTrue(result.length > 0, "Daily forecast data array in Imperial units is empty.");
+    }
+
+    @Test
+    public void testGetHourlyForecastImperial() {
+        DisplayHandler instance = new DisplayHandler();
+        String[] cityData = {"51.51", "-0.13"}; // Coordinates of London
+        String[][] result = instance.getHourlyForecastImperial(cityData);
+        assertNotNull(result, "Hourly forecast data in Imperial units is null.");
+        assertTrue(result.length > 0, "Hourly forecast data array in Imperial units is empty.");
+    }
 
 }
