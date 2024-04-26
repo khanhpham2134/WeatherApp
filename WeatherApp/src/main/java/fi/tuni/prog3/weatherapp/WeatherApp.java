@@ -401,6 +401,7 @@ public class WeatherApp extends Application {
     public static void main(String[] args) {
         launch();
     }
+    
     private Button getQuitButton() {
         //Creating a button.
         Button button = new Button("Quit");
