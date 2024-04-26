@@ -1,2 +1,2 @@
-HELSINKI, FI
-true
+AMSTERDAM, NL
+false
