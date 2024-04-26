@@ -22,7 +22,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 
 import java.util.Map;
@@ -303,7 +304,7 @@ public class WeatherApp extends Application {
                     
 
                     currentCityData = cityInfo;
-                    if (cityInfo[2] == "") {
+                    if (cityInfo[2] == "" || !cityInfo[3].contains("US")) {
                         cityLoc = cityName.toUpperCase() + ", " + cityInfo[3];
                         city.setText(cityLoc);
                     } else {
@@ -348,7 +349,7 @@ public class WeatherApp extends Application {
                     String cityName = inputParams[0];
                     cityInfo = displayHandler.getCityInformation(inputParams);
                     currentCityData = cityInfo;
-                    if (cityInfo[2] == "") {
+                    if (cityInfo[2] == "" || !cityInfo[3].contains("US")) {
                         cityLoc = cityName.toUpperCase() + ", " + cityInfo[3];
                         city.setText(cityLoc);
                     } else {
@@ -480,7 +481,7 @@ public class WeatherApp extends Application {
             inputParams = cityLoc.split(",", 10);
             cityInfo = displayHandler.getCityInformation(inputParams);
             currentCityData = cityInfo;
-            if (cityInfo[2] == "") {
+            if (cityInfo[2] == "" || !cityInfo[3].contains("US")) {
                 city.setText(cityLoc);
             } else {
                 city.setText(cityLoc);

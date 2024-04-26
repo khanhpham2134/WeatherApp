@@ -1,5 +1,4 @@
-HANOI, VN
-HELSINKI, FI
-AMSTERDAM, North Holland, NL
-W, Texas, US
-HIEU, Kon Tum Province, VN
+AMSTERDAM, NL
+HIEU, VN
+BRISTOL, GB
+BRISTOL, Virginia, US
