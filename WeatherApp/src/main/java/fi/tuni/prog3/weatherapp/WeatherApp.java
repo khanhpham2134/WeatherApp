@@ -1,6 +1,5 @@
 package fi.tuni.prog3.weatherapp;
 
-import com.google.gson.Gson;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -22,18 +21,13 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
 
-import java.util.Map;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
 
 
 
@@ -83,7 +77,7 @@ public class WeatherApp extends Application {
         
         // Few Days Forecast     
         VBox fewDaysForecast = new VBox(25);
-        fewDaysForecast.setPrefSize(290, 275);
+        fewDaysForecast.setPrefWidth(350);
         fewDaysForecast.setPadding(new Insets(10, 10 , 10, 10));
         fewDaysForecast.setStyle("-fx-background-color: #b8e2f2;");
         
@@ -518,6 +512,7 @@ public class WeatherApp extends Application {
             // Initialize favouritesBox only if it's not already initialized
             if (favouritesBox == null) {
                 favouritesBox = new ComboBox<>();
+                favouritesBox.setMaxWidth(10);
             }
             favouritesBox.setPromptText("Favourites");
             
@@ -546,6 +541,7 @@ public class WeatherApp extends Application {
             // Initialize favouritesBox only if it's not already initialized
             if (historyBox == null) {
                 historyBox = new ComboBox<>();
+                historyBox.setMaxWidth(10);
             }
             historyBox.setPromptText("Choose History");
             
