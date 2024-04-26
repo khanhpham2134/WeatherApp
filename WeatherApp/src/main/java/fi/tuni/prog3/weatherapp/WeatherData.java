@@ -45,7 +45,7 @@ public class WeatherData implements iAPI {
      * @param unit 
      */
     public WeatherData(String unit){
-        API_KEY = "7e2aaa9d361a771034770163dde8b02c";  
+        API_KEY = "6488dd22faf64b3442d1fb4ec997d360";  
         UNIT = unit;
         ERROR_LOCATION = false;
     }
