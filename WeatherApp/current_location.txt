@@ -1,2 +1,2 @@
-AMSTERDAM, NL
-false
+TAMPERE, FI
+true

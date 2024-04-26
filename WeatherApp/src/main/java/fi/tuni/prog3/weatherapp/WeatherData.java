@@ -297,7 +297,7 @@ public class WeatherData implements iAPI {
             String[] weatherInfo = {temperatureString, feelsLikeString, minTempString, maxTempString,
                     humidity, description, mainSky, windSpeed, localDateTimeString, local_sun_rise, local_sun_set};
 
-            return weatherInfo;
+            return weatherInfo; 
         } catch (IOException e) {
             e.printStackTrace();
             // In case of error, return null

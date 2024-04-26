@@ -10,8 +10,7 @@ public class DisplayHandler {
     private final iAPI weatherAPIMetric = new WeatherData("metric");
     private final iAPI weatherAPIImperial = new WeatherData("imperial");
 
-    public boolean ifInputValid(TextField textField) {
-        String[] cityData = textField.getText().split(",", 10);
+    public boolean ifInputValid(String[] cityData) {
         if (cityData.length == 1) {
             String[] cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], "", "");
             

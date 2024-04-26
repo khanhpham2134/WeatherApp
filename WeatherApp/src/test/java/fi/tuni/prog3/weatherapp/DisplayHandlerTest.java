@@ -6,18 +6,34 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DisplayHandlerTest {
 
     @Test
-    public void testIfInputValid_validInput() {
+    public void testIfInputValid_oneParameter() {
         DisplayHandler instance = new DisplayHandler();
-        TextField textField = new TextField("London");
-        boolean result = instance.ifInputValid(textField);
+        String[] cityData = {"London"};
+        boolean result = instance.ifInputValid(cityData);
         assertFalse(result, "Expected valid input, but got invalid.");
     }
 
     @Test
-    public void testIfInputValid_invalidInput() {
+    public void testIfInputValid_twoParameters() {
         DisplayHandler instance = new DisplayHandler();
-        TextField textField = new TextField("Invalid City Name,invalid param");
-        boolean result = instance.ifInputValid(textField);
+        String[] cityData = {"London", "GB"};
+        boolean result = instance.ifInputValid(cityData);
+        assertFalse(result, "Expected valid input, but got invalid.");
+    }
+
+    @Test
+    public void testIfInputValid_threeParameters() {
+        DisplayHandler instance = new DisplayHandler();
+        String[] cityData = {"London", "Ontario", "CA"};
+        boolean result = instance.ifInputValid(cityData);
+        assertFalse(result, "Expected valid input, but got invalid.");
+    }
+
+    @Test
+    public void testIfInputValid_invalidParameters() {
+        DisplayHandler instance = new DisplayHandler();
+        String[] cityData = {"London", "Ontario", "CA", "Extra"};
+        boolean result = instance.ifInputValid(cityData);
         assertTrue(result, "Expected invalid input, but got valid.");
     }
 
@@ -36,7 +52,7 @@ public class DisplayHandlerTest {
         String[] cityData = {"51.51", "-0.13"}; // Coordinates of London
         String[] result = instance.getCurrentWeatherDataMetric(cityData);
         assertNotNull(result, "Current weather data in metric is null.");
-        assertEquals(6, result.length, "Expected current weather data array length 6.");
+        assertEquals(11, result.length, "Expected current weather data array length 11.");
     }
 
     @Test
@@ -63,7 +79,7 @@ public class DisplayHandlerTest {
         String[] cityData = {"51.51", "-0.13"}; // Coordinates of London
         String[] result = instance.getCurrentWeatherDataImperial(cityData);
         assertNotNull(result, "Current weather data in Imperial units is null.");
-        assertEquals(6, result.length, "Expected current weather data array length 6.");
+        assertEquals(11, result.length, "Expected current weather data array length 11.");
     }
 
     @Test

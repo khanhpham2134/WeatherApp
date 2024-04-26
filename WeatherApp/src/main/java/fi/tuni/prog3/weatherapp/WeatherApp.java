@@ -277,9 +277,9 @@ public class WeatherApp extends Application {
         searchButton = new Button("Search");
         searchButton.setOnAction((ActionEvent event) -> {
             if (isMetric) {
-                boolean inputIsInvalid = displayHandler.ifInputValid(searchBar);
                 String input = searchBar.getText();
                 String[] inputParams = input.split(",", 10);
+                boolean inputIsInvalid = displayHandler.ifInputValid(inputParams);
                 if (inputParams[0].strip() == "") {
                     Alert a = new Alert(AlertType.WARNING); 
                     a.setContentText("Blank Input");
@@ -325,9 +325,9 @@ public class WeatherApp extends Application {
                     updateHourlyForecast(hourlyForecastTexts, hourlyForecastImages, hourlyForecastData);
                 } 
             } else {
-                boolean inputIsInvalid = displayHandler.ifInputValid(searchBar);
                 String input = searchBar.getText();
                 String[] inputParams = input.split(",", 10);
+                boolean inputIsInvalid = displayHandler.ifInputValid(inputParams);
                 if (inputParams[0].strip() == "") {
                     Alert a = new Alert(AlertType.WARNING); 
                     a.setContentText("Blank Input");
