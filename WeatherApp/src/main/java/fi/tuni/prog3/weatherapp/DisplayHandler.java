@@ -17,13 +17,13 @@ public class DisplayHandler {
      */
     public boolean ifInputValid(String[] cityData) {
         if (cityData.length == 1) {
-            String[] cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], "", "");
+            weatherAPIMetric.lookUpLocation(cityData[0], "", "");
             
         } else if (cityData.length == 2) {
-            String[] cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], "", cityData[1]);
+            weatherAPIMetric.lookUpLocation(cityData[0], "", cityData[1]);
             
         } else if (cityData.length == 3) {
-            String[] cityLocation = weatherAPIMetric.lookUpLocation(cityData[0], cityData[1], cityData[2]);            
+            weatherAPIMetric.lookUpLocation(cityData[0], cityData[1], cityData[2]);            
         } else { // invalid amount of parameters
             return true;
         }
