@@ -167,7 +167,6 @@ public class WeatherData implements iAPI {
             }
             
             // Parse a JSON array of location 
-            Gson gson = new Gson();
             JsonArray json_array = JsonParser.parseString(json_string.toString()).getAsJsonArray();        
             JsonElement json_element = json_array.get(0);  
             String latitude = json_element.getAsJsonObject().get("lat").getAsString();
@@ -256,9 +255,6 @@ public class WeatherData implements iAPI {
             ZoneId zoneId = ZoneId.ofOffset("UTC", zoneOffset);
 
             // Extracting relevant weather information
-            double visibility = jsonResponse.get("visibility").getAsDouble() / 1000; // Convert to km
-            String visibilityString = String.valueOf(visibility) + "km";
-            
             long dateTime = jsonResponse.get("dt").getAsLong();
             LocalDateTime localDateTime = LocalDateTime.ofInstant(java.time.Instant.ofEpochSecond(dateTime), zoneId);
             String localDateTimeString = localDateTime.format(java.time.format.DateTimeFormatter.ofPattern("HH"));

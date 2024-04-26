@@ -21,14 +21,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
-
 
 
 /**
@@ -49,10 +47,8 @@ public class WeatherApp extends Application {
     private boolean isMetric = true;
     private String[] currentCityData = {};
     private String[] cityInfo = {};
-    private String[] cityData = {};
     private String cityLoc;
     private String[] inputParams = {};
-    private String result;
 
     private final DisplayHandler displayHandler = new DisplayHandler();
     private final ImageHandler imageHandler = new ImageHandler();
@@ -246,6 +242,7 @@ public class WeatherApp extends Application {
                 updateHourlyForecast(hourlyForecastTexts, hourlyForecastImages, hourlyForecastData);
                 
                 isMetric = true;
+
             } else {
                 // Change daily forecast
                 dailyForecast = displayHandler.getDailyForecastImperial(currentCityData);
@@ -401,7 +398,12 @@ public class WeatherApp extends Application {
     public static void main(String[] args) {
         launch();
     }
-    
+
+    /**
+        * Creates and returns a quit button.
+        *
+        * @return the quit button
+        */
     private Button getQuitButton() {
         //Creating a button.
         Button button = new Button("Quit");
@@ -417,6 +419,12 @@ public class WeatherApp extends Application {
     
     // Save favourite locations
     
+    /**
+     * Writes the data of the WeatherApp object to three separate files: "favourites.txt", "current_location.txt", and "history.txt".
+     * The favourites and history lists are written line by line to their respective files.
+     * The current location and isMetric values are written to "current_location.txt".
+     * If an IOException occurs during the writing process, the exception is printed to the standard error stream.
+     */
     private void writeToFile() {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("favourites.txt"))) {
@@ -451,6 +459,15 @@ public class WeatherApp extends Application {
         }
     }
     
+    /**
+     * Reads data from files and updates the weather information in the application.
+     * This method reads data from three files: "favourites.txt", "current_location.txt", and "history.txt".
+     * It populates the 'favourites' list with the contents of "favourites.txt".
+     * It reads the current location and weather unit information from "current_location.txt" and updates the UI accordingly.
+     * It populates the 'history' list with the contents of "history.txt".
+     * 
+     * @throws IOException if an I/O error occurs while reading the files.
+     */
     private void readToFile() {
 
         try (BufferedReader reader = new BufferedReader(new FileReader("favourites.txt"))) {
@@ -508,6 +525,11 @@ public class WeatherApp extends Application {
         }
     }
      
+    /**
+     * Returns a ComboBox that displays the user's favorite items.
+     * 
+     * @return The ComboBox that displays the user's favorite items.
+     */
     private ComboBox<String> favouritesDropBox() {
         try {
             // Initialize favouritesBox only if it's not already initialized
@@ -537,6 +559,15 @@ public class WeatherApp extends Application {
         return favouritesBox;
     }
     
+    /**
+     * Creates and returns a ComboBox with a list of historical search items.
+     * If the ComboBox is not already initialized, it initializes it and sets its maximum width to 10.
+     * The ComboBox is set with a prompt text "Choose History".
+     * When a historical search item is selected from the ComboBox, it sets the selected item as the text in the searchBar and triggers the searchButton.
+     * If the ComboBox is empty and the history list is not null or empty, it sets the items of the ComboBox to the history list.
+     *
+     * @return The ComboBox with historical search items.
+     */
     private ComboBox<String> historyDropBox() {
         try {
             // Initialize favouritesBox only if it's not already initialized
@@ -566,17 +597,28 @@ public class WeatherApp extends Application {
         return historyBox;
     }
       
-      // This method updates the items in the ComboBox
+    /**
+     * Updates the favorites drop box with the current list of favorites.
+     * Clears the existing items in the drop box and sets the items to the current list of favorites.
+     */
     private void updateFavBox() {
         favouritesDropBox().getItems().clear();
         favouritesDropBox().getItems().setAll(favourites);
     }
-    
+
+    /**
+     * Updates the history drop box with the items from the history list.
+     */
     private void updateHisBox() {
         historyDropBox().getItems().clear();
         historyDropBox().getItems().setAll(history);
     }
     
+    /**
+     * Updates the state of the save favorite button based on whether the current city location is in the favorites list.
+     * If the current city location is in the favorites list, the button will be selected and display "Unsave".
+     * If the current city location is not in the favorites list, the button will be unselected and display "Save as favourite".
+     */
     private void updatesaveFavButtonState() {
         if (favourites.contains(cityLoc)) {
             saveFavButton.setSelected(true);
@@ -587,6 +629,13 @@ public class WeatherApp extends Application {
         }
     }
 
+    /**
+     * Updates the daily forecast in the WeatherApp.
+     *
+     * @param dailyForecastTexts   a 2D array of Text objects representing the daily forecast text elements
+     * @param dailyForecastImages  an array of ImageView objects representing the daily forecast image elements
+     * @param dailyForecast        a 2D array of Strings representing the daily forecast data
+     */
     private void updateDailyForecast(Text[][] dailyForecastTexts, ImageView[] dailyForecastImages, String[][] dailyForecast) {
         for (int i = 0; i < 4; i++) {
             dailyForecastTexts[i][0].setText(dailyForecast[i][0]);
@@ -596,6 +645,14 @@ public class WeatherApp extends Application {
         }
     }
     
+    /**
+     * Updates the current weather information in the UI.
+     *
+     * @param currentWeatherTexts An array of Text objects representing the UI elements for displaying current weather information.
+     * @param currentWeatherView  An ImageView object representing the UI element for displaying the current weather icon.
+     * @param currentWeatherData  An array of strings containing the current weather data.
+     * @param dailyForecast       A 2D array of strings containing the daily forecast data.
+     */
     private void updateCurrentWeather(Text[] currentWeatherTexts, ImageView currentWeatherView, String[] currentWeatherData, String[][] dailyForecast) {
         currentWeatherTexts[3].setText(currentWeatherData[0]);
         currentWeatherTexts[4].setText("FEELS LIKE: " + currentWeatherData[1]);
@@ -606,6 +663,13 @@ public class WeatherApp extends Application {
         currentWeatherTexts[6].setText("WIND SPEED: " + currentWeatherData[7]);
     }
 
+    /**
+     * Updates the hourly forecast display with the provided data.
+     *
+     * @param hourlyForecastTexts   The 2D array of Text objects representing the hourly forecast text elements.
+     * @param hourlyForecastImages  The array of ImageView objects representing the hourly forecast image elements.
+     * @param hourlyForecastData    The 2D array of Strings containing the hourly forecast data.
+     */
     private void updateHourlyForecast(Text[][] hourlyForecastTexts, ImageView[] hourlyForecastImages, String[][] hourlyForecastData) {
         String sunrise = currentWeatherData[9];
         String sunset = currentWeatherData[10];
