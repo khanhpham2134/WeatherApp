@@ -1,6 +1,11 @@
 package fi.tuni.prog3.weatherapp;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -27,6 +32,7 @@ import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 
 import java.util.Map;
+import java.util.Optional;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,19 +52,18 @@ public class WeatherApp extends Application {
     private TextField searchBar;
     private Button searchButton;
     private ToggleButton saveFavButton;
-    private List<String> favourites = new ArrayList<String>();
-    private ComboBox<String> favouritesBox = favouritesDropBox();
+    private List<cityData> favourites = new ArrayList<cityData>();
+    private ComboBox<cityData> favouritesBox = favouritesDropBox();
     private List<String> history = new ArrayList<String>();
     private ComboBox<String> historyBox = historyDropBox();
-    private String selectedFavourite;
+    private cityData selectedFavourite;
+    private cityData cityData;
 
     private boolean isMetric = true;
     private String[] currentCityData = {};
     private String[] cityInfo = {};
-    private String[] cityData = {};
     private String cityLoc;
     private String[] inputParams = {};
-    private String result;
 
     private final DisplayHandler displayHandler = new DisplayHandler();
     private final ImageHandler imageHandler = new ImageHandler();
@@ -215,6 +220,7 @@ public class WeatherApp extends Application {
         updateFavBox();
         updateHisBox();
 
+        //Button setFav = new Button("Favorite");
         saveFavButton = new ToggleButton("Save as favourite");
         // Update the button state based on the favorite status
         updatesaveFavButtonState();
@@ -223,13 +229,12 @@ public class WeatherApp extends Application {
         saveFavButton.setOnAction(event -> {
             if (saveFavButton.isSelected()) {
                 // If the button is selected, add the city to favorites
-                favourites.add(cityLoc);
+                favourites.add(cityData);
             } else {
                 // If the button is not selected, remove the city from favorites
-                favourites.remove(cityLoc);      
+                favourites.remove(cityData);      
             } 
             updateFavBox();
-            favouritesBox.setValue(null);
             updatesaveFavButtonState(); // Update the button state after toggling favorite status
         });
 
@@ -302,7 +307,6 @@ public class WeatherApp extends Application {
 
                     cityInfo = displayHandler.getCityInformation(inputParams);
                     
-
                     currentCityData = cityInfo;
                     if (cityInfo[2] == "") {
                         cityLoc = cityName.toUpperCase() + ", " + cityInfo[3];
@@ -424,12 +428,14 @@ public class WeatherApp extends Application {
     
     private void writeToFile() {
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("favourites.txt"))) {
-            for (String location : favourites) {
-                writer.write(location);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("favourites.json"))) {
+            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+            for (cityData location : favourites) {
+                String json = gson.toJson(location);
+                writer.write(json);
                 writer.newLine();
             }
-            writer.close();
+            // No need to explicitly close the writer here, try-with-resources does that for you
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -441,6 +447,7 @@ public class WeatherApp extends Application {
             writer.close();
         }
 
+
         catch (IOException e) {
             e.printStackTrace();
         }
@@ -450,6 +457,7 @@ public class WeatherApp extends Application {
                 writer.write(location);
                 writer.newLine();
             }
+
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -458,12 +466,12 @@ public class WeatherApp extends Application {
     
     private void readToFile() {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("favourites.txt"))) {
-
+        try (BufferedReader reader = new BufferedReader(new FileReader("favourites.json"))) {
+            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
             String line;
-
             while ((line = reader.readLine()) != null) {
-                favourites.add(line);
+                cityData city = gson.fromJson(line, cityData.class);
+                favourites.add(city);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -513,7 +521,7 @@ public class WeatherApp extends Application {
         }
     }
      
-    private ComboBox<String> favouritesDropBox() {
+    private ComboBox<cityData> favouritesDropBox() {
         try {
             // Initialize favouritesBox only if it's not already initialized
             if (favouritesBox == null) {
@@ -523,15 +531,40 @@ public class WeatherApp extends Application {
             
             // Add selected favourite to search box
             favouritesBox.setOnAction(event -> {
-                selectedFavourite = favouritesBox.getValue();
-                if (selectedFavourite != null) {
-                    searchBar.setText(selectedFavourite);
-                    searchButton.fire();
+                cityData selectedFavourite = favouritesBox.getValue();
+                if (selectedFavourite != null && !selectedFavourite.toString().isEmpty()) {
+                    isMetric = selectedFavourite.isMetric();
+                    String lon = selectedFavourite.getLongitude();
+                    String lat = selectedFavourite.getLatitude();
+                    String state = selectedFavourite.getState();
+                    String country = selectedFavourite.getCountry();
+                    cityInfo = new String[] {lat, lon, state, country};
+                    Text city = currentWeatherTexts[2];
+                    if (cityInfo[2] == "") {
+                        cityLoc = cityName.toUpperCase() + ", " + cityInfo[3];
+                        city.setText(cityLoc);
+                    } else {
+                        cityLoc = cityName.toUpperCase() + ", " + cityInfo[2] + ", " + cityInfo[3];
+                        city.setText(cityLoc);
+                    }
+                    if (!isMetric) {
+                        dailyForecast = displayHandler.getDailyForecastImperial(cityInfo);
+                        currentWeatherData = displayHandler.getCurrentWeatherDataImperial(cityInfo);
+                        hourlyForecastData = displayHandler.getHourlyForecastImperial(cityInfo);}
+                    else {
+                        dailyForecast = displayHandler.getDailyForecastMetric(cityInfo);
+                        currentWeatherData = displayHandler.getCurrentWeatherDataMetric(cityInfo);
+                        hourlyForecastData = displayHandler.getHourlyForecastMetric(cityInfo);
+                    }
+                    updateDailyForecast(dailyForecastTexts, dailyForecastImages, dailyForecast);
+                    updateCurrentWeather(currentWeatherTexts, currentWeatherView, currentWeatherData, dailyForecast);
+                    updateHourlyForecast(hourlyForecastTexts, hourlyForecastImages, hourlyForecastData);
+                    
                 } 
             });
             // Check if favourites is null or empty before setting items
             if (favouritesBox.getItems().isEmpty() && favourites != null && !favourites.isEmpty()) {
-                favouritesBox.getItems().setAll(favourites);
+                favouritesBox.getItems().addAll(favourites);
             }
     
             return favouritesBox;
@@ -572,7 +605,7 @@ public class WeatherApp extends Application {
       // This method updates the items in the ComboBox
     private void updateFavBox() {
         favouritesDropBox().getItems().clear();
-        favouritesDropBox().getItems().setAll(favourites);
+        favouritesBox.getItems().addAll(favourites);
     }
     
     private void updateHisBox() {
@@ -581,7 +614,7 @@ public class WeatherApp extends Application {
     }
     
     private void updatesaveFavButtonState() {
-        if (favourites.contains(cityLoc)) {
+        if (favourites.contains(cityData)) {
             saveFavButton.setSelected(true);
             saveFavButton.setText("Unsave");
         } else {
@@ -617,6 +650,18 @@ public class WeatherApp extends Application {
             hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
             hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
         }
+    }
+
+    private JsonObject createJsonObject(String[] cityInfo, String cityName, boolean isMetric) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("cityName", cityName);
+        jsonObject.addProperty("latitude", cityInfo[0]);
+        jsonObject.addProperty("longitude", cityInfo[1]);
+        jsonObject.addProperty("state", cityInfo[2]);
+        jsonObject.addProperty("country", cityInfo[3]);
+        jsonObject.addProperty("isMetric", isMetric);
+        return jsonObject;
+
     }
     
 }

@@ -1,19 +1,28 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package fi.tuni.prog3.weatherapp;
 
-/**
- *
- * @author khanhpm
- */
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class cityData {
+    @Expose
     private String cityName;
+    @Expose
     private String latitude;
+    @Expose
     private String longitude;
+    @Expose
     private String state;
+    @Expose
     private String country;
+    @Expose
+    private boolean isMetric;
+
+    @Override
+    public String toString() {
+        return cityName; // This will be used by the ComboBox to display the city name
+    }
 
     // Getters and setters (necessary for Gson)
     public String getCityName() {
@@ -55,5 +64,12 @@ public class cityData {
     public void setCountry(String country) {
         this.country = country;
     }
-}
+    
+    public boolean isMetric() {
+        return isMetric;
+    }
 
+    public void setMetric(boolean metric) {
+        isMetric = metric;
+    }
+}
