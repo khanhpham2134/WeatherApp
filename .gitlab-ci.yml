@@ -1,8 +1,8 @@
-stages:
+git stages:
   - build
 
 image:
-  name: "maven:3.6.3-openjdk-11"
+  name: "maven:3.8.4-openjdk-17"
 
 build:
   stage: build
