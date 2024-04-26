@@ -187,13 +187,13 @@ public class WeatherApp extends Application {
         currentWeather.setCenter(currentWeatherDataBox);
         BorderPane additionalDataBox = new BorderPane();
         VBox data = new VBox();
-        Text feelsLike = new Text("FEELS LIKE: ");
+        Text feelsLike = new Text("Feels like: ");
         feelsLike.setStyle("-fx-font: 23 arial;");
         currentWeatherTexts[4] = feelsLike;
-        Text humid = new Text("HUMIDITY: "); 
+        Text humid = new Text("Humidity: "); 
         humid.setStyle("-fx-font: 23 arial;");
         currentWeatherTexts[5] = humid;
-        Text wind = new Text("WIND SPEED: ");
+        Text wind = new Text("Wind speed: ");
         wind.setStyle("-fx-font: 23 arial;");
         data.getChildren().addAll(feelsLike, humid, wind);
         currentWeatherTexts[6] = wind;
@@ -655,12 +655,12 @@ public class WeatherApp extends Application {
      */
     private void updateCurrentWeather(Text[] currentWeatherTexts, ImageView currentWeatherView, String[] currentWeatherData, String[][] dailyForecast) {
         currentWeatherTexts[3].setText(currentWeatherData[0]);
-        currentWeatherTexts[4].setText("FEELS LIKE: " + currentWeatherData[1]);
+        currentWeatherTexts[4].setText("Feels like: " + currentWeatherData[1]);
         currentWeatherTexts[0].setText("L: " + dailyForecast[0][2]);
         currentWeatherTexts[1].setText("H: " + dailyForecast[0][3]);
-        currentWeatherTexts[5].setText("HUMIDITY: " + currentWeatherData[4]);
+        currentWeatherTexts[5].setText("Humidity: " + currentWeatherData[4]);
         currentWeatherView.setImage(new Image(getClass().getResourceAsStream(imageHandler.currentImageHandler(currentWeatherData))));
-        currentWeatherTexts[6].setText("WIND SPEED: " + currentWeatherData[7]);
+        currentWeatherTexts[6].setText("Wind speed: " + currentWeatherData[7]);
     }
 
     /**
