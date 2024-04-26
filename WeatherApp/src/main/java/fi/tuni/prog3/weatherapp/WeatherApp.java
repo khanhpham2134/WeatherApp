@@ -22,8 +22,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.text.SimpleDateFormat;
 
 import java.util.Map;
@@ -88,34 +87,34 @@ public class WeatherApp extends Application {
         fewDaysForecast.setStyle("-fx-background-color: #b8e2f2;");
         
         for (int i = 0; i < 4; i++) {
-        HBox day = new HBox(15);
-        day.setAlignment(Pos.CENTER);
+            HBox day = new HBox(15);
+            day.setAlignment(Pos.CENTER);
 
-        Text date = new Text("Day " + (i + 1)); // Example: You can replace this with the actual date
-        date.setStyle("-fx-font: 28 arial; -fx-font-weight: bold;");
+            Text date = new Text("Day " + (i + 1)); // Example: You can replace this with the actual date
+            date.setStyle("-fx-font: 28 arial; -fx-font-weight: bold;");
 
-        Text minTemp = new Text("0°C");
-        minTemp.setStyle("-fx-font: 28 arial;");
+            Text minTemp = new Text("0°C");
+            minTemp.setStyle("-fx-font: 28 arial;");
 
-        Text maxTemp = new Text("0°C");
-        maxTemp.setStyle("-fx-font: 28 arial;");
+            Text maxTemp = new Text("0°C");
+            maxTemp.setStyle("-fx-font: 28 arial;");
 
-        Image description = new Image(getClass().getResourceAsStream("/icons/day-clear.png"));
-        ImageView descriptionView = new ImageView(description);
-        descriptionView.setFitHeight(50);
-        descriptionView.setFitWidth(50);
+            Image description = new Image(getClass().getResourceAsStream("/icons/day-clear.png"));
+            ImageView descriptionView = new ImageView(description);
+            descriptionView.setFitHeight(50);
+            descriptionView.setFitWidth(50);
 
-        Region r = new Region();
-        HBox.setHgrow(r, Priority.ALWAYS);
+            Region r = new Region();
+            HBox.setHgrow(r, Priority.ALWAYS);
 
-        day.getChildren().addAll(date, r, minTemp, maxTemp, descriptionView);
-        dailyForecastTexts[i][0] = date;
-        dailyForecastTexts[i][1] = minTemp;
-        dailyForecastTexts[i][2] = maxTemp;
-        dailyForecastImages[i] = descriptionView;
+            day.getChildren().addAll(date, r, minTemp, maxTemp, descriptionView);
+            dailyForecastTexts[i][0] = date;
+            dailyForecastTexts[i][1] = minTemp;
+            dailyForecastTexts[i][2] = maxTemp;
+            dailyForecastImages[i] = descriptionView;
 
-        fewDaysForecast.getChildren().add(day);
-    }
+            fewDaysForecast.getChildren().add(day);
+        }
         
         // Hourly Forecast
         GridPane hourlyForecast = new GridPane();
@@ -595,7 +594,7 @@ public class WeatherApp extends Application {
             dailyForecastTexts[i][0].setText(dailyForecast[i][0]);
             dailyForecastTexts[i][1].setText(dailyForecast[i][2]);
             dailyForecastTexts[i][2].setText(dailyForecast[i][3]);
-            dailyForecastImages[i].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(dailyForecast[i][4]))));
+            dailyForecastImages[i].setImage(new Image(getClass().getResourceAsStream(imageHandler.forecastImageHandler(dailyForecast[i][4]))));
         }
     }
     
@@ -605,16 +604,18 @@ public class WeatherApp extends Application {
         currentWeatherTexts[0].setText("L: " + dailyForecast[0][2]);
         currentWeatherTexts[1].setText("H: " + dailyForecast[0][3]);
         currentWeatherTexts[5].setText("HUMIDITY: " + currentWeatherData[4]);
-        currentWeatherView.setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(currentWeatherData[6]))));
+        currentWeatherView.setImage(new Image(getClass().getResourceAsStream(imageHandler.currentImageHandler(currentWeatherData))));
         currentWeatherTexts[6].setText("WIND SPEED: " + currentWeatherData[7]);
     }
 
     private void updateHourlyForecast(Text[][] hourlyForecastTexts, ImageView[] hourlyForecastImages, String[][] hourlyForecastData) {
+        String sunrise = currentWeatherData[9];
+        String sunset = currentWeatherData[10];
         for (int hour = 0; hour < 24; hour++) {
             hourlyForecastTexts[hour][0].setText(hourlyForecastData[hour][0] + ":00");
             hourlyForecastTexts[hour][1].setText(hourlyForecastData[hour][1]);
             hourlyForecastTexts[hour][2].setText(hourlyForecastData[hour][2]);
-            hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.imageHandler(hourlyForecastData[hour][3]))));
+            hourlyForecastImages[hour].setImage(new Image(getClass().getResourceAsStream(imageHandler.hourlyImageHandler(hourlyForecastData[hour], sunrise, sunset))));
             hourlyForecastTexts[hour][3].setText(hourlyForecastData[hour][4]);
         }
     }
