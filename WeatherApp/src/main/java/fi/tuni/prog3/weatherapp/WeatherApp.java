@@ -142,7 +142,7 @@ public class WeatherApp extends Application {
         
         // Current Weather
         BorderPane currentWeather = new BorderPane();
-        currentWeather.setPrefSize(390, 275);
+        currentWeather.setPrefWidth(420);
         currentWeather.setPadding(new Insets(10, 10 , 10, 10));
         currentWeather.setStyle("-fx-background-color: #ffffc2");
         
@@ -206,6 +206,7 @@ public class WeatherApp extends Application {
         updateHisBox();
 
         saveFavButton = new ToggleButton("Save as favourite");
+        saveFavButton.setMaxWidth(210);
         // Update the button state based on the favorite status
         updatesaveFavButtonState();
 
@@ -226,7 +227,7 @@ public class WeatherApp extends Application {
         saveFavButton.setPrefWidth(100);
 
         Button changeUnit = new Button("Change Unit");
-        changeUnit.setPrefWidth(100);
+        changeUnit.setMaxWidth(180);
         changeUnit.setOnAction((ActionEvent event) -> {
             if (!isMetric) {
                 // Change daily forecast
@@ -551,7 +552,6 @@ public class WeatherApp extends Application {
             if (favouritesBox.getItems().isEmpty() && favourites != null && !favourites.isEmpty()) {
                 favouritesBox.getItems().setAll(favourites);
             }
-    
             return favouritesBox;
         } catch (Exception e) {
             e.printStackTrace(); 
@@ -661,6 +661,7 @@ public class WeatherApp extends Application {
         currentWeatherTexts[5].setText("Humidity: " + currentWeatherData[4]);
         currentWeatherView.setImage(new Image(getClass().getResourceAsStream(imageHandler.currentImageHandler(currentWeatherData))));
         currentWeatherTexts[6].setText("Wind speed: " + currentWeatherData[7]);
+
     }
 
     /**
