@@ -1,25 +1,21 @@
-# Ohjelmointi 3 projektin tietovarasto
+# Weather App
 
-Tämä on ryhmäsi yhteinen tietovarasto projektin tekemistä varten. Varasto sisältää yksinkertaisen
-Maven-muotoisen JavaFX-projektin.
+The program serves as a conventional weather app, where you can look for the current weather information, weather forecasts for the next three days, and hourly forecasts for the next 24 hours of mostly every location on Earth. The weather information includes, for example, average temperature, highest and lowest points, wind speed. Here are some features of the program, which are listed below: 
 
-Huomaa, että nyt projektissa on useita jäseniä ja tekemisesi vaikuttaa muiden työhön.
+* Weather information can be displayed in either metric unit or imperial unit.  
 
-Liitä harjoitustyön materiaalien etätietovarasto 
-(https://course-gitlab.tuni.fi/compcs140-spring2024/group_template_project)
-paikalliseen tietovarastoosi remoteksi, jotta voit ladata mahdollisia muutoksia kurssin tarjoamaan materiaaliin.
+* Favourite locations and the current location are stored in files when the program closes and read again when the program starts. When users choose the location from the drop boxes, the program will execute a search command to show the weather information of that location. 
 
-Tätä tiedostoa saa (ja on hyväkin) muuttaa projektin aloittamisen jälkeen.
+* Users can also save and unsave a location as their favourites 
 
-# Programming 3 project repository
+* The state of the program will remain unchanged after closing using Quit button 
 
-This is the repository for implementing the course project for your group. It contains a simple JavaFX-Maven
-project.
+* Unit tests have been implemented using continuous integration 
 
-Note that your project now has several members and what you do impacts other's work.
+* Weather information can be displayed in either metric unit or imperial unit. 
 
-Add the remote repository for the project material
-(https://course-gitlab.tuni.fi/compcs140-spring2024/group_template_project)
-as a remote to your local repository to fetch possible updates to the code provided by the course.
+* Location search history. Recently searched locations are kept in memory and displayed to the user to make it easier to go back to them later. Search history is also saved in a file and restored on program restart. 
 
-You are allowed (and probably should) make changes to this file after you have started your project.
+* The users can even deduce both the current local time and the sunrise/sunset time of a location by examining the hourly forecast. This is because each timestamp in this section is marked with the local hour, and the weather icon corresponding to each time indicates either a sun or a moon. 
+
+* Users can clear search history. 
