@@ -146,12 +146,21 @@ public class WeatherData implements iAPI {
     public String[] lookUpLocation(String loc_name, String state_name, String country_code) {
         final String Open_weather_geocoding = "http://api.openweathermap.org/geo/1.0/direct";
         ERROR_LOCATION = false;
-        // query
-        String query = "q=" + loc_name + "," + state_name + "," + country_code +"&appid=" + API_KEY;
-        // limit is not provided, by default only 1 location returned
-    
+
+        // Start building the query
+        StringBuilder query = new StringBuilder("q=" + loc_name);
+
+        // Add country_code if it's not null or empty (no need for state_name in many cases)
+        if (country_code != null && !country_code.isEmpty()) {
+            query.append(",").append(country_code);
+        }
+
+        // Append the API key
+        query.append("&appid=").append(API_KEY);
+
         // URL
-        String address = Open_weather_geocoding + "?" + query;
+        String address = Open_weather_geocoding + "?" + query.toString().replace(" ", "%20");
+
     
         // Utilizing scanner
         Scanner scanner = null;
