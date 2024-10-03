@@ -1,21 +1,73 @@
-# Weather App
+# WeatherApp
 
-The program serves as a conventional weather app, where you can look for the current weather information, weather forecasts for the next three days, and hourly forecasts for the next 24 hours of mostly every location on Earth. The weather information includes, for example, average temperature, highest and lowest points, wind speed. Here are some features of the program, which are listed below: 
+WeatherApp is a JavaFX-based application that provides weather information for locations around the world. It offers current weather data, daily forecasts, and hourly forecasts using the OpenWeatherMap API.
 
-* Weather information can be displayed in either metric unit or imperial unit.  
+## Features
 
-* Favourite locations and the current location are stored in files when the program closes and read again when the program starts. When users choose the location from the drop boxes, the program will execute a search command to show the weather information of that location. 
+- Search for weather information by city name, state (for US locations), and country code
+- Display current weather conditions including temperature, feels-like temperature, humidity, wind speed, and more
+- Show a 4-day forecast including daily high and low temperatures
+- Provide hourly forecasts for the next 24 hours
+- Toggle between metric and imperial units
+- Save favorite locations for quick access
+- View search history
+- Automatically save and load favorite locations and current settings
 
-* Users can also save and unsave a location as their favourites 
+## Getting Started
 
-* The state of the program will remain unchanged after closing using Quit button 
+### Prerequisites
 
-* Unit tests have been implemented using continuous integration 
+- Java Development Kit (JDK) 17 or later
+- Maven
 
-* Weather information can be displayed in either metric unit or imperial unit. 
+### Installation
 
-* Location search history. Recently searched locations are kept in memory and displayed to the user to make it easier to go back to them later. Search history is also saved in a file and restored on program restart. 
+1. Clone the repository:
+   ```
+   git clone https://your-repository-url.git
+   ```
 
-* The users can even deduce both the current local time and the sunrise/sunset time of a location by examining the hourly forecast. This is because each timestamp in this section is marked with the local hour, and the weather icon corresponding to each time indicates either a sun or a moon. 
+2. Navigate to the project directory:
+   ```
+   cd WeatherApp/WeatherApp
+   ```
 
-* Users can clear search history. 
+3. Build the project:
+   ```
+   mvn clean package
+   ```
+
+### Running the Application
+
+To run the application, use the following command: 
+```
+mvn javafx:run
+```
+
+## Usage
+
+1. Enter a city name in the search bar (optionally include state and country code for more precise results)
+2. Click the "Search" button or press Enter to fetch weather data
+3. Use the "Change Unit" button to switch between metric and imperial units
+4. Click "Save as favourite" to add a location to your favorites
+5. Use the "Favorites" and "History" dropdowns to quickly access previously searched locations
+6. The "Clear History" button allows you to remove all items from the search history
+7. The "Quit" button ends the application
+
+## File Structure
+
+The main components of the project are:
+
+WeatherApp/WeatherApp/src/main/java/fi/tuni/prog3/weatherapp/
+
+├── WeatherData.java      # Handles API requests and data processing
+
+├── DisplayHandler.java   # Manages data display formatting
+
+├── iAPI.java             # Interface for API operations
+
+└── iReadAndWriteToFile.java  # Interface for file I/O operations
+
+![Screenshot 2024-09-23 214117](https://github.com/user-attachments/assets/20eefaf3-ce17-4501-b90b-0ccd39b9aaa8)
+![Screenshot 2024-09-23 214035](https://github.com/user-attachments/assets/a2668c57-a467-4605-b3ed-eb957c9be706)
+![Screenshot 2024-09-23 213930](https://github.com/user-attachments/assets/3de0e48d-bcec-4b17-8987-3db96ebe3fe7)
